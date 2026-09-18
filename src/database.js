@@ -50,6 +50,20 @@ function parseMessage(row) {
   } : null;
 }
 
+function parseQuestion(row) {
+  return row ? {
+    id: row.id,
+    messageId: row.message_id,
+    authorId: row.author_id,
+    text: row.text,
+    topics: JSON.parse(row.topics || '[]'),
+    confidence: row.confidence,
+    urgency: row.urgency,
+    requiresOfficialSource: Boolean(row.requires_official_source),
+    createdAt: row.created_at,
+  } : null;
+}
+
 function ftsQuery(query) {
   const terms = query.toLowerCase().match(/[\p{L}\p{N}_-]+/gu) || [];
   return terms.map(term => `"${term.replaceAll('"', '""')}"`).join(' OR ');
@@ -151,6 +165,16 @@ export function openDatabase(filePath) {
     },
     countQuestions() {
       return sqlite.prepare('SELECT COUNT(*) AS count FROM questions').get().count;
+    },
+    listIssueBundles() {
+      const questions = sqlite.prepare(`
+        SELECT q.* FROM questions q
+        JOIN issue_questions iq ON iq.question_id = q.id
+        WHERE iq.issue_id = ? ORDER BY q.created_at, q.id
+      `);
+      return this.listIssueStats()
+        .filter(issue => issue.status !== 'RESOLVED')
+        .map(issue => ({ ...issue, questions: questions.all(issue.id).map(parseQuestion) }));
     },
     createIssue(issue) {
       upsertIssueStatement.run(
