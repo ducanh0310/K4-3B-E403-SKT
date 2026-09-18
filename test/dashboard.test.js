@@ -36,6 +36,30 @@ test('escapes issue text and rejects unsafe links', () => {
   assert.match(html, /&lt;script&gt;/);
 });
 
+test('groups issues by primary topic and collapses low-priority items', () => {
+  const html = renderDashboard([
+    {
+      id: 'cvat', title: 'CVAT OPA error', summary: 'Policy bundle lỗi', topics: ['technical'], status: 'OPEN',
+      firstSeen: '2026-09-18T08:00:00+07:00', lastSeen: '2026-09-18T09:00:00+07:00',
+      uniqueAskers: 4, questionCount: 6, urgency: 'high', officialSources: [],
+    },
+    {
+      id: 'deadline', title: 'Lab 2 deadline', summary: 'Hạn nộp Lab 2', topics: ['deadline'], status: 'OPEN',
+      firstSeen: '2026-09-18T08:00:00+07:00', lastSeen: '2026-09-18T09:00:00+07:00',
+      uniqueAskers: 3, questionCount: 3, urgency: 'normal', officialSources: [],
+    },
+    {
+      id: 'misc', title: 'Câu hỏi riêng lẻ', summary: 'Không phổ biến', topics: ['other'], status: 'OPEN',
+      firstSeen: '2026-09-17T08:00:00+07:00', lastSeen: '2026-09-17T09:00:00+07:00',
+      uniqueAskers: 1, questionCount: 1, urgency: 'normal', officialSources: [],
+    },
+  ], { now: new Date('2026-09-18T13:00:00Z') });
+
+  assert.match(html, /<h2[^>]*>Technical<\/h2>/);
+  assert.match(html, /<h2[^>]*>Deadline<\/h2>/);
+  assert.match(html, /<summary>Khác \/ ít phổ biến \(1\)<\/summary>/);
+});
+
 test('dashboard requires configured HTTP Basic credentials', async t => {
   const db = { listIssueStats: () => [] };
   const server = startDashboard({ db, port: 0, username: 'ta', password: 'secret', logger: { log() {}, error() {} } });
