@@ -87,6 +87,7 @@ TA workflow:
 - A read-only aggregate dashboard listens on `DASHBOARD_HOST:DASHBOARD_PORT`; keep the default localhost binding. Set both `DASHBOARD_USER` and `DASHBOARD_PASSWORD` before exposing it through an SSH or Cloudflare tunnel.
 - Set `DEMO_DATABASE_PATH` to show an isolated replay database at `/demo` without polluting live Discord issues.
 - Resolved moderator replies are indexed as 30-day RAG knowledge. Startup and daily retention pruning remove expired messages, answers, issues, and LLM cache from both the live and demo/reference databases.
+- `npm run merge-demo` imports demo messages, questions, issues, and links into the live database with `demo:` IDs. The import is idempotent and only copies rows inside `CONTEXT_RETENTION_DAYS`.
 
 ## EC2 deployment
 

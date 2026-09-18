@@ -6,6 +6,7 @@
   "engines": { "node": ">=22.13" },
   "scripts": {
     "test": "node --test",
+    "merge-demo": "node src/merge-demo.js",
     "replay": "node src/replay.js",
     "start": "node src/bot.js"
   },
