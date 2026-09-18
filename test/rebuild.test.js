@@ -18,6 +18,7 @@ function rebuildLlm(calls) {
     async completeJson({ purpose, input }) {
       calls.push(purpose);
       if (purpose === 'classify_issue_batch') {
+        if (input.issues.length > 10) throw new Error('LLM did not return valid JSON');
         return { issues: input.issues.map(issue => ({
           id: issue.id,
           support_relevant: issue.id !== 'I3',
@@ -86,6 +87,7 @@ test('rebuilds clustered issues while preserving trusted knowledge', async t => 
   assert.deepEqual(rebuilt.searchOfficialSources('deadline', 5).map(item => item.id), ['SRC']);
   assert.deepEqual(rebuilt.searchKnowledge('restart Docker', 5).map(item => item.id), ['ANSWER:OLD']);
   assert.equal(rebuilt.listIssueStats().filter(issue => issue.status !== 'RESOLVED').length, 1);
-  assert.deepEqual(calls, ['classify_issue_batch', 'classify_issue_batch', 'cluster_issue_batch']);
+  assert.equal(calls.filter(purpose => purpose === 'classify_issue_batch').length, 8);
+  assert.equal(calls.at(-1), 'cluster_issue_batch');
   rebuilt.close();
 });
