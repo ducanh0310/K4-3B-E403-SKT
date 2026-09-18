@@ -39,6 +39,7 @@ export function loadConfig(env = process.env, { replay = false } = {}) {
     dashboardPort: portNumber(env.DASHBOARD_PORT, 8787, 'DASHBOARD_PORT'),
     dashboardUser: env.DASHBOARD_USER || '',
     dashboardPassword: env.DASHBOARD_PASSWORD || '',
+    dashboardPublicUrl: (env.DASHBOARD_PUBLIC_URL || '').replace(/\/$/, ''),
     demoDatabasePath: env.DEMO_DATABASE_PATH ? path.resolve(env.DEMO_DATABASE_PATH) : '',
   };
 }

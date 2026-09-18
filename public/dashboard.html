@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-token" content="__CSRF_TOKEN__">
+  <title>TA Course Assistant · Operations</title>
+  <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+  <aside class="server-rail" aria-label="Điều hướng chính">
+    <div class="server-icon active" title="TA Course Assistant">◆</div>
+    <div class="rail-divider"></div>
+    <button class="server-icon" type="button" title="Support">?</button>
+    <button class="server-icon" type="button" title="Knowledge">K</button>
+    <div class="rail-spacer"></div>
+    <span class="service-dot" title="Bot online"></span>
+  </aside>
+
+  <aside class="channel-sidebar">
+    <header class="workspace-title">
+      <div><strong>TA COURSE</strong><span>ASSISTANT</span></div>
+      <span class="online-pill">LIVE</span>
+    </header>
+    <section class="sidebar-section">
+      <p class="section-label">DATASET</p>
+      <button class="nav-item active" data-dataset="live" type="button"><span>#</span> Discord live <b id="live-count">0</b></button>
+      <button class="nav-item" data-dataset="demo" type="button"><span>#</span> K4 demo <b>RO</b></button>
+    </section>
+    <section class="sidebar-section">
+      <p class="section-label">BỘ LỌC NHANH</p>
+      <button class="filter-chip active" data-status="" type="button"><i></i>Tất cả issue</button>
+      <button class="filter-chip critical" data-status="STUCK" type="button"><i></i>Đang bị kẹt</button>
+      <button class="filter-chip warning" data-status="NEEDS_REVIEW" type="button"><i></i>Cần TA review</button>
+      <button class="filter-chip info" data-status="OPEN" type="button"><i></i>Chưa xử lý</button>
+    </section>
+    <section class="sidebar-section topic-section">
+      <p class="section-label">CHỦ ĐỀ</p>
+      <div id="topic-filters"></div>
+    </section>
+    <footer class="operator-card"><div class="avatar">TA</div><div><strong>Teaching Assistant</strong><span>Bot đang đồng bộ</span></div><span class="service-dot"></span></footer>
+  </aside>
+
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="search-wrap"><span>⌕</span><input id="search" type="search" placeholder="Tìm issue, lỗi, bài tập hoặc học viên…"><kbd>/</kbd></div>
+      <div class="top-actions"><span id="sync-status" class="sync-status"><i></i>Live sync</span><button id="refresh" class="icon-button" type="button" title="Làm mới">↻</button></div>
+    </header>
+
+    <section class="overview" aria-label="Tổng quan">
+      <div><p class="eyebrow">DISCORD OPERATIONS COMMAND</p><h1>Hàng đợi hỗ trợ</h1><p>AI gom câu hỏi; TA xác minh, xử lý và bổ sung knowledge.</p></div>
+      <div class="metrics"><article><span>Tổng issue</span><strong id="metric-total">0</strong></article><article class="metric-critical"><span>STUCK</span><strong id="metric-stuck">0</strong></article><article class="metric-warning"><span>Cần review</span><strong id="metric-review">0</strong></article></div>
+    </section>
+
+    <section class="operations-grid">
+      <section class="queue-panel">
+        <header class="panel-header"><div><h2>Issue Queue</h2><span id="queue-summary">0 issue</span></div><select id="sort"><option value="priority">Ưu tiên</option><option value="recent">Mới nhất</option><option value="students">Nhiều học viên</option></select></header>
+        <div id="issue-list" class="issue-list" aria-live="polite"></div>
+      </section>
+
+      <aside id="issue-detail" class="detail-panel" aria-live="polite">
+        <div class="empty-state"><div class="empty-icon">⌁</div><h2>Chọn một issue</h2><p>Xem câu hỏi gốc, chạy AI de-cluster và xử lý trực tiếp.</p></div>
+      </aside>
+    </section>
+  </main>
+
+  <dialog id="split-review">
+    <form method="dialog" class="review-shell">
+      <header class="review-header"><div><p class="eyebrow">AI DE-CLUSTER</p><h2>Đề xuất tách issue</h2></div><button class="icon-button" value="cancel" aria-label="Đóng">×</button></header>
+      <p class="review-help">Kiểm tra tên nhóm và câu hỏi trước khi xác nhận. Câu confidence thấp vẫn nằm ở issue gốc.</p>
+      <section id="proposal-groups" class="proposal-groups"></section>
+      <footer class="review-actions"><button value="cancel" class="button ghost">Hủy</button><button id="confirm-split" type="button" class="button primary">Xác nhận tách</button></footer>
+    </form>
+  </dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="/dashboard.js" defer></script>
+</body>
+</html>

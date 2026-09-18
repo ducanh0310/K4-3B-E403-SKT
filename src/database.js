@@ -142,6 +142,19 @@ export function openDatabase(filePath) {
       representative_jump_url=COALESCE(excluded.representative_jump_url, issues.representative_jump_url)
   `);
 
+  function refreshIssueSearch() {
+    sqlite.prepare('DELETE FROM issue_search').run();
+    sqlite.prepare('INSERT INTO issue_search (issue_id, title, summary, topics) SELECT id, title, summary, topics FROM issues').run();
+  }
+
+  function writeIssue(issue) {
+    upsertIssueStatement.run(
+      issue.id, issue.title, issue.summary, json(issue.topics), issue.status,
+      issue.confidence, issue.urgency || 'normal', issue.requiresOfficialSource ? 1 : 0,
+      issue.firstSeen, issue.lastSeen, issue.representativeJumpUrl || null,
+    );
+  }
+
   return {
     insertMessage(message) {
       return insertMessageStatement.run(
@@ -189,6 +202,12 @@ export function openDatabase(filePath) {
     },
     getIssue(id) {
       return parseIssue(sqlite.prepare('SELECT * FROM issues WHERE id = ?').get(id));
+    },
+    getIssueBundle(id) {
+      const issue = this.listIssueStats().find(item => item.id === id);
+      if (!issue) return null;
+      const questions = sqlite.prepare(`SELECT q.* FROM questions q JOIN issue_questions iq ON iq.question_id = q.id WHERE iq.issue_id = ? ORDER BY q.created_at, q.id`).all(id).map(parseQuestion);
+      return { ...issue, questions };
     },
     searchIssues(query, limit = 10) {
       const match = ftsQuery(query);
@@ -259,6 +278,69 @@ export function openDatabase(filePath) {
         throw error;
       }
       return this.getIssue(targetId);
+    },
+    findIssueForQuestion(questionId) {
+      const row = sqlite.prepare('SELECT issue_id FROM issue_questions WHERE question_id = ? LIMIT 1').get(questionId);
+      return row?.issue_id || null;
+    },
+    moveQuestions({ sourceId, targetId, questionIds }) {
+      const ids = [...new Set((questionIds || []).map(String))];
+      if (!ids.length) throw new Error('At least one question is required');
+      if (sourceId === targetId) throw new Error('Source and target issues must differ');
+      if (!this.getIssue(sourceId) || !this.getIssue(targetId)) throw new Error('Issue not found');
+      sqlite.exec('BEGIN');
+      try {
+        const membership = sqlite.prepare('SELECT 1 FROM issue_questions WHERE issue_id = ? AND question_id = ?');
+        const unlink = sqlite.prepare('DELETE FROM issue_questions WHERE issue_id = ? AND question_id = ?');
+        const link = sqlite.prepare('INSERT OR IGNORE INTO issue_questions (issue_id, question_id) VALUES (?, ?)');
+        for (const questionId of ids) {
+          if (!membership.get(sourceId, questionId)) throw new Error(`Question does not belong to source issue: ${questionId}`);
+          unlink.run(sourceId, questionId);
+          link.run(targetId, questionId);
+        }
+        if (!sqlite.prepare('SELECT 1 FROM issue_questions WHERE issue_id = ? LIMIT 1').get(sourceId)) {
+          sqlite.prepare('DELETE FROM issue_sources WHERE issue_id = ?').run(sourceId);
+          sqlite.prepare('DELETE FROM issues WHERE id = ?').run(sourceId);
+        }
+        refreshIssueSearch();
+        sqlite.exec('COMMIT');
+      } catch (error) {
+        sqlite.exec('ROLLBACK');
+        throw error;
+      }
+      return this.getIssueBundle(targetId);
+    },
+    splitIssue({ sourceId, keep, groups, now = new Date().toISOString() }) {
+      const source = this.getIssue(sourceId);
+      if (!source) throw new Error('Source issue not found');
+      const assignments = [keep, ...(groups || [])];
+      if (!keep?.questionIds?.length || groups.some(group => !group.questionIds?.length)) throw new Error('Every split group requires questions');
+      const ids = assignments.flatMap(group => group.questionIds.map(String));
+      if (ids.length !== new Set(ids).size) throw new Error('A question may appear in only one split group');
+      sqlite.exec('BEGIN');
+      try {
+        const membership = sqlite.prepare('SELECT 1 FROM issue_questions WHERE issue_id = ? AND question_id = ?');
+        for (const questionId of ids) {
+          if (!membership.get(sourceId, questionId)) throw new Error(`Question does not belong to source issue: ${questionId}`);
+        }
+        writeIssue({ ...source, ...keep, id: sourceId, lastSeen: source.lastSeen });
+        for (const group of groups) {
+          if (this.getIssue(group.id)) throw new Error(`Issue already exists: ${group.id}`);
+          const questionRows = group.questionIds.map(id => sqlite.prepare('SELECT created_at FROM questions WHERE id = ?').get(id));
+          const dates = questionRows.map(row => row.created_at).sort();
+          writeIssue({ ...source, ...group, status: 'NEEDS_REVIEW', confidence: Number(group.confidence || 0), firstSeen: dates[0] || now, lastSeen: dates.at(-1) || now, resolvedAt: null });
+          for (const questionId of group.questionIds) {
+            sqlite.prepare('DELETE FROM issue_questions WHERE issue_id = ? AND question_id = ?').run(sourceId, questionId);
+            sqlite.prepare('INSERT INTO issue_questions (issue_id, question_id) VALUES (?, ?)').run(group.id, questionId);
+          }
+        }
+        refreshIssueSearch();
+        sqlite.exec('COMMIT');
+      } catch (error) {
+        sqlite.exec('ROLLBACK');
+        throw error;
+      }
+      return [this.getIssueBundle(sourceId), ...groups.map(group => this.getIssueBundle(group.id))];
     },
     addOfficialSource(source) {
       sqlite.prepare(`
@@ -384,6 +466,9 @@ export function openDatabase(filePath) {
       sqlite.prepare('INSERT OR REPLACE INTO llm_cache (cache_key, response_json, created_at) VALUES (?, ?, ?)')
         .run(key, JSON.stringify(value), createdAt);
     },
+    deleteCached(key) {
+      return sqlite.prepare('DELETE FROM llm_cache WHERE cache_key = ?').run(key).changes === 1;
+    },
     pruneBefore(cutoff) {
       sqlite.exec('BEGIN');
       try {
@@ -394,7 +479,6 @@ export function openDatabase(filePath) {
         sqlite.prepare('DELETE FROM issue_sources WHERE issue_id IN (SELECT id FROM issues WHERE last_seen < ?)').run(cutoff);
         const issues = sqlite.prepare('DELETE FROM issues WHERE last_seen < ?').run(cutoff).changes;
         const cache = sqlite.prepare('DELETE FROM llm_cache WHERE created_at < ?').run(cutoff).changes;
-        sqlite.prepare('DELETE FROM issue_answers WHERE created_at < ?').run(cutoff);
         sqlite.prepare('DELETE FROM issue_search WHERE issue_id NOT IN (SELECT id FROM issues)').run();
         sqlite.prepare('DELETE FROM issue_answer_search WHERE answer_id NOT IN (SELECT id FROM issue_answers)').run();
         sqlite.exec('COMMIT');

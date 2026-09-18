@@ -97,20 +97,55 @@ test('backfills RAG knowledge from existing resolved TA replies', () => {
   db.close();
 });
 
-test('prunes raw context and cache older than retention cutoff', () => {
+test('prunes raw context and cache but preserves verified knowledge', () => {
   const db = openDatabase(':memory:');
   db.insertMessage({ id: 'OLD', guildId: 'G', channelId: 'C', authorId: 'A', isBot: false, content: 'old', createdAt: '2026-08-01T00:00:00Z' });
   db.insertQuestion({ id: 'OLD:1', messageId: 'OLD', authorId: 'A', text: 'old', topics: ['other'], confidence: 0.5, createdAt: '2026-08-01T00:00:00Z' });
   db.createIssue({ id: 'OLD-I', title: 'Old issue', summary: 'old', topics: ['other'], status: 'OPEN', confidence: 0.5, firstSeen: '2026-08-01T00:00:00Z', lastSeen: '2026-08-01T00:00:00Z' });
   db.linkQuestion('OLD-I', 'OLD:1');
   db.setCached('old-cache', { ok: true }, '2026-08-01T00:00:00Z');
-  db.addIssueAnswer({ id: 'OLD-A', issueId: 'OLD-I', title: 'Old answer', content: 'old', createdAt: '2026-08-01T00:00:00Z' });
+  db.addIssueAnswer({ id: 'OLD-A', issueId: 'OLD-I', title: 'Legacy TA fix', content: 'restart legacy service', createdAt: '2026-08-01T00:00:00Z' });
+  db.addOfficialSource({ id: 'OLD-S', title: 'Old official source', content: 'verified old policy', createdAt: '2026-08-01T00:00:00Z' });
 
   const result = db.pruneBefore('2026-08-19T00:00:00Z');
   assert.equal(result.messages, 1);
   assert.equal(db.countQuestions(), 0);
   assert.equal(db.getIssue('OLD-I'), null);
   assert.equal(db.getCached('old-cache'), null);
-  assert.deepEqual(db.searchKnowledge('Old answer', 5), []);
+  assert.deepEqual(db.searchKnowledge('restart legacy', 5).map(item => item.id), ['OLD-A']);
+  assert.deepEqual(db.searchKnowledge('official policy', 5).map(item => item.id), ['OLD-S']);
+  db.close();
+});
+
+function seededSplitDatabase() {
+  const db = openDatabase(':memory:');
+  for (const [index, text] of ['Xem điểm danh ở đâu?', 'Điểm danh của em bị sai', 'Quy định nghỉ học'].entries()) {
+    const id = `Q${index + 1}`;
+    db.insertMessage({ id: `M${index + 1}`, guildId: 'G', channelId: 'C', authorId: `A${index + 1}`, isBot: false, content: text, createdAt: `2026-09-18T0${index + 8}:00:00Z` });
+    db.insertQuestion({ id, messageId: `M${index + 1}`, authorId: `A${index + 1}`, text, topics: ['attendance'], confidence: 0.9, createdAt: `2026-09-18T0${index + 8}:00:00Z` });
+  }
+  for (const id of ['SOURCE', 'TARGET']) db.createIssue({ id, title: id, summary: id, topics: ['attendance'], status: 'OPEN', confidence: 0.9, firstSeen: '2026-09-18T08:00:00Z', lastSeen: '2026-09-18T10:00:00Z' });
+  for (const id of ['Q1', 'Q2', 'Q3']) db.linkQuestion('SOURCE', id);
+  db.addOfficialSource({ id: 'S1', title: 'Attendance policy', content: 'Official', createdAt: '2026-09-18T08:00:00Z' });
+  db.linkIssueSource('SOURCE', 'S1', 0.9);
+  return db;
+}
+
+test('moves selected questions between issues atomically', () => {
+  const db = seededSplitDatabase();
+  db.moveQuestions({ sourceId: 'SOURCE', targetId: 'TARGET', questionIds: ['Q1', 'Q2'] });
+  assert.deepEqual(db.getIssueBundle('SOURCE').questions.map(item => item.id), ['Q3']);
+  assert.deepEqual(db.getIssueBundle('TARGET').questions.map(item => item.id).sort(), ['Q1', 'Q2']);
+  assert.throws(() => db.moveQuestions({ sourceId: 'SOURCE', targetId: 'TARGET', questionIds: ['Q1'] }), /does not belong/);
+  db.close();
+});
+
+test('splits an issue without copying official evidence', () => {
+  const db = seededSplitDatabase();
+  db.splitIssue({ sourceId: 'SOURCE', keep: { title: 'Attendance lookup', summary: 'Lookup', topics: ['attendance'], questionIds: ['Q1'] }, groups: [{ id: 'SPLIT', title: 'Attendance appeal', summary: 'Appeal', topics: ['attendance'], questionIds: ['Q2', 'Q3'], confidence: 0.9 }] });
+  assert.deepEqual(db.getIssueBundle('SOURCE').questions.map(item => item.id), ['Q1']);
+  assert.deepEqual(db.getIssueBundle('SPLIT').questions.map(item => item.id).sort(), ['Q2', 'Q3']);
+  assert.equal(db.getIssueBundle('SPLIT').officialSources.length, 0);
+  assert.equal(db.getIssue('SPLIT').status, 'NEEDS_REVIEW');
   db.close();
 });

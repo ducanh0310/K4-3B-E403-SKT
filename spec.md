@@ -122,6 +122,7 @@ Loại: [x] Tính năng mới  [ ] Tối ưu tính năng có sẵn
   | Run #1 | 17/9 21:00 | 35 cases | 31 cases | 88.5% | Ban đầu chưa tối ưu bộ lọc Regex tin nhắn cảm ơn |
   | Run #2 | 18/9 16:00 | 42 cases | 41 cases | 97.6% | Bổ sung FTS5 index và kiểm tra trích dẫn strict citation |
   | **Run #3 (Hiện tại)** | **18/9 19:30** | **50 cases** | **50 cases** | **100.0%** | **Vượt Quality bar. Pass toàn bộ 50 unit & integration tests trong `npm test`.** |
+  | Run #4 — `/ask` model thật | 18/9 19:32 | 20 cases | 19 cases | 95.0% | Chạy Gemini/9Router trên DB production; còn 1 lỗi retrieval với nguồn CVAT OPA. Xem `eval/ask-results.md`. |
 
 ## §8. Phân công & kế hoạch
 - **Phân công có tên**:

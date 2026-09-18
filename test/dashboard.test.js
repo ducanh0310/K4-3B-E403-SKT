@@ -89,3 +89,39 @@ test('dashboard remains accessible when credentials are not configured', async t
   const { port } = server.address();
   assert.equal((await fetch(`http://127.0.0.1:${port}/healthz`)).status, 200);
 });
+
+test('dashboard API exposes the same derived STUCK status as the digest', async t => {
+  const issue = {
+    id: 'OLD', title: 'Old question', summary: 'Still unanswered', topics: ['other'], status: 'OPEN',
+    firstSeen: '2026-09-18T00:00:00Z', lastSeen: '2026-09-18T00:00:00Z',
+    uniqueAskers: 1, questionCount: 1, urgency: 'normal', officialSources: [], questions: [],
+  };
+  const db = { listIssueStats: () => [issue], getIssueBundle: () => issue };
+  const server = startDashboard({ db, port: 0, stuckAfterHours: 4, logger: { log() {}, error() {} } });
+  t.after(() => server.close());
+  await once(server, 'listening');
+  const base = `http://127.0.0.1:${server.address().port}`;
+
+  const list = await (await fetch(`${base}/api/issues`)).json();
+  assert.equal(list.issues[0].derivedStatus, 'STUCK');
+  assert.equal(list.issues[0].status, 'STUCK');
+  const detail = await (await fetch(`${base}/api/issues/OLD`)).json();
+  assert.equal(detail.issue.derivedStatus, 'STUCK');
+  assert.equal(detail.issue.status, 'STUCK');
+});
+
+test('dashboard API requires CSRF for mutations', async t => {
+  const db = { listIssueStats: () => [], getIssueBundle: () => null };
+  const issueManager = { analyze: async id => ({ id: 'P1', issueId: id, groups: [], unassignedQuestionIds: [] }) };
+  const server = startDashboard({ db, issueManager, port: 0, username: 'ta', password: 'secret', logger: { log() {}, error() {} } });
+  t.after(() => server.close());
+  await once(server, 'listening');
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const authorization = `Basic ${Buffer.from('ta:secret').toString('base64')}`;
+  const page = await fetch(`${base}/`, { headers: { authorization } });
+  const csrf = (await page.text()).match(/name="csrf-token" content="([^"]+)"/)[1];
+  assert.equal((await fetch(`${base}/api/issues/I/analyze`, { method: 'POST', headers: { authorization } })).status, 403);
+  const accepted = await fetch(`${base}/api/issues/I/analyze`, { method: 'POST', headers: { authorization, origin: base, 'content-type': 'application/json', 'x-csrf-token': csrf }, body: '{}' });
+  assert.equal(accepted.status, 200);
+  assert.equal((await accepted.json()).proposal.id, 'P1');
+});

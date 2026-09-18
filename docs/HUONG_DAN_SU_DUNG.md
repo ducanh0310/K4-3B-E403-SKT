@@ -139,6 +139,36 @@ Gom hai issue trùng nhau:
 
 TA cũng có thể dùng nút `✓` trong digest để resolve nhanh issue.
 
+### Tách issue bị gom quá rộng
+
+Yêu cầu AI đề xuất các nhóm nhỏ hơn:
+
+```text
+/issue analyze id:<issue-id>
+```
+
+Bot trả về preview riêng cho TA. Chọn `Open Dashboard Review` để đổi tên và kiểm tra proposal, `Confirm All` để chấp nhận các nhóm đủ confidence, hoặc `Cancel` để bỏ đề xuất. AI không tự sửa database trước khi TA xác nhận.
+
+Chuyển một atomic question sang issue khác:
+
+```text
+/issue move question:<question-id> target:<issue-id>
+```
+
+Trên dashboard, TA có thể chọn nhiều câu hỏi để chuyển cùng lúc, tạo issue mới, merge, resolve, reopen hoặc chạy phân tích AI. Dataset `/demo` luôn read-only.
+
+### Nâng cấp giao diện dashboard
+
+UI không cần build frontend. Có thể sửa trực tiếp:
+
+```text
+public/dashboard.html
+public/dashboard.css
+public/dashboard.js
+```
+
+Backend, Basic Auth, CSRF và database API nằm trong `src/dashboard.js`; không đưa password hoặc token vào ba file UI.
+
 ### Tự động học từ câu trả lời TA
 
 Khi TA trả lời trực tiếp vào message của học viên và hệ thống xác định câu trả lời đã giải quyết vấn đề:
@@ -178,7 +208,7 @@ RAG hiện dùng SQLite FTS để tìm kiếm nhanh. Chưa cần vector database
 
 ## 6. Retention 30 ngày
 
-`CONTEXT_RETENTION_DAYS=30` áp dụng cho cả live DB và demo/reference DB.
+`CONTEXT_RETENTION_DAYS=30` áp dụng cho context hội thoại của live DB và demo/reference DB.
 
 Bot tự prune:
 
@@ -190,8 +220,9 @@ Dữ liệu quá 30 ngày bị xóa khỏi context hoạt động:
 - Raw messages.
 - Atomic questions.
 - Issues và liên kết nguồn.
-- Câu trả lời TA đã index.
 - LLM cache.
+
+Nguồn chính thức và câu trả lời TA đã xác minh được giữ lại làm knowledge cho `/ask` cho đến khi TA cập nhật hoặc xóa thủ công.
 
 Dataset ngày 12–14/09/2026 vẫn còn hiệu lực tại ngày 18/09/2026 vì chưa quá 30 ngày.
 

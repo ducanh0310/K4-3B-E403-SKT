@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"surface-dim":"#12131c","on-secondary-fixed":"#00210a","on-tertiary":"#383000","surface-container-low":"#1a1b25","on-primary-fixed":"#000569","inverse-surface":"#e2e1ef","tertiary":"#ddc73f","on-secondary":"#003917","error":"#ffb4ab","primary-fixed-dim":"#bec2ff","surface":"#12131c","on-surface":"#e2e1ef","on-error-container":"#ffdad6","secondary":"#43e179","surface-container-high":"#282934","on-primary-container":"#fffdff","on-background":"#e2e1ef","background":"#12131c","surface-bright":"#383843","surface-tint":"#bec2ff","on-tertiary-container":"#494000","on-error":"#690005","secondary-fixed":"#65ff92","on-tertiary-fixed-variant":"#514700","outline-variant":"#454655","inverse-primary":"#3f4cda","primary-container":"#5865f2","surface-container-lowest":"#0c0e17","on-secondary-container":"#00481e","on-primary-fixed-variant":"#222fc2","error-container":"#93000a","surface-variant":"#33343f","secondary-container":"#04c25e","tertiary-fixed-dim":"#ddc73f","tertiary-container":"#c0ac23","surface-container-highest":"#33343f","on-tertiary-fixed":"#201c00","on-surface-variant":"#c6c5d7","secondary-fixed-dim":"#43e179","primary-fixed":"#e0e0ff","on-secondary-fixed-variant":"#005224","outline":"#8f8fa0","primary":"#bec2ff","tertiary-fixed":"#fae359","inverse-on-surface":"#2f303a","surface-container":"#1e1f29","on-primary":"#000da4"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"space-lg":"1.25rem","space-xl":"2rem","space-xs":"0.25rem",margin:"1.5rem",gutter:"1rem","space-md":"0.75rem","space-sm":"0.5rem"},fontFamily:{"headline-lg":["Inter"],"headline-md":["Inter"],display:["Inter"],"headline-sm":["Inter"],"label-md":["JetBrains Mono"],"body-sm":["Inter"],"label-sm":["JetBrains Mono"],"body-lg":["Inter"],"body-md":["Inter"],tag:["Inter"]},fontSize:{"headline-lg":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"600"}],"headline-md":["18px",{lineHeight:"24px",letterSpacing:"-0.01em",fontWeight:"600"}],display:["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-sm":["15px",{lineHeight:"20px",letterSpacing:"-0.005em",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"500"}],"body-sm":["12px",{lineHeight:"16px",letterSpacing:"0.01em",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.03em",fontWeight:"500"}],"body-lg":["15px",{lineHeight:"22px",letterSpacing:"0em",fontWeight:"400"}],"body-md":["13px",{lineHeight:"18px",letterSpacing:"0em",fontWeight:"400"}],tag:["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"600"}]}}}}</script></head><body class="bg-background font-body-md text-on-surface"><aside class="fixed left-0 top-0 h-full w-16 bg-surface-container-lowest z-50 flex flex-col items-center py-space-md gap-space-sm"><div class="relative group flex items-center justify-center"><div class="w-10 h-10 rounded-2xl bg-primary-container flex items-center justify-center text-on-primary-container transition-all hover:rounded-xl"><span class="material-symbols-outlined text-[20px]">smart_toy</span></div><div class="absolute -left-3 w-1 h-8 bg-on-surface rounded-r-full"></div></div><div class="w-8 h-[2px] bg-surface-container-high rounded-full my-space-xs"></div><div class="relative group flex items-center justify-center"><div class="w-10 h-10 rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container hover:rounded-xl transition-all"><span class="material-symbols-outlined text-[20px]">school</span></div><span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-error text-on-error font-label-sm text-label-sm">9</span></div><div class="w-10 h-10 rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container hover:rounded-xl transition-all"><span class="material-symbols-outlined text-[20px]">terminal</span></div><div class="w-10 h-10 rounded-2xl bg-surface-container-high flex items-center justify-center text-on-surface-variant hover:bg-primary-container hover:text-on-primary-container hover:rounded-xl transition-all"><span class="material-symbols-outlined text-[20px]">dataset</span></div><div class="mt-auto flex flex-col items-center gap-space-sm"><div class="w-10 h-10 rounded-2xl bg-surface-container-high flex items-center justify-center text-secondary hover:bg-surface-container transition-all"><span class="material-symbols-outlined text-[20px]">wifi_tethering</span></div></div></aside><aside class="fixed left-16 top-0 h-full w-60 bg-surface-container-low z-40 flex flex-col pt-space-md pb-space-md"><div class="px-space-md pb-space-md flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">TA Course Assistant</span><span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span></div><div class="flex items-center gap-space-xs"><span class="h-2 w-2 rounded-full bg-secondary"></span><span class="font-label-sm text-label-sm text-on-surface-variant">Bot Online · 1,420 Học viên</span></div></div><div class="px-space-md my-space-xs"><div class="flex items-center bg-surface-container-lowest p-space-xs rounded-lg"><button class="flex-1 text-center py-space-xs rounded font-label-sm text-label-sm bg-primary-container text-on-primary-container font-semibold" type="button">Live</button><button class="flex-1 text-center py-space-xs rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface" type="button">Demo</button></div></div><div class="px-space-md pt-space-md pb-space-xs"><span class="font-label-sm text-label-sm uppercase tracking-wider text-outline">Discord Channels</span></div><nav class="flex-1 px-space-sm space-y-space-xs" data-active-classes="bg-surface-container text-on-surface font-semibold rounded-lg"><a aria-current="page" class="flex items-center px-space-sm py-space-xs transition-all gap-space-xs bg-surface-container text-on-surface font-semibold rounded-lg" data-path="all-issues" href="#"><span class="font-headline-sm text-headline-sm text-outline">#</span><span class="font-body-md text-body-md">all-issues</span></a><a class="flex items-center px-space-sm py-space-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all gap-space-xs" data-path="open-tickets" href="#"><span class="font-headline-sm text-headline-sm text-outline">#</span><span class="font-body-md text-body-md">open-tickets</span></a><a class="flex items-center px-space-sm py-space-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all gap-space-xs" data-path="needs-review" href="#"><span class="font-headline-sm text-headline-sm text-outline">#</span><span class="font-body-md text-body-md">needs-review</span></a><a class="flex items-center px-space-sm py-space-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all gap-space-xs" data-path="ai-split-proposals" href="#"><span class="font-headline-sm text-headline-sm text-outline">#</span><span class="font-body-md text-body-md">ai-split-proposals</span></a><a class="flex items-center px-space-sm py-space-xs text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all gap-space-xs" data-path="bot-settings" href="#"><span class="font-headline-sm text-headline-sm text-outline">#</span><span class="font-body-md text-body-md">bot-settings</span></a></nav><div class="mt-auto px-space-md pt-space-sm"><div class="bg-surface-container p-space-sm rounded-xl flex items-center justify-between"><div class="flex items-center gap-space-xs"><div class="w-2 h-2 rounded-full bg-secondary"></div><div class="flex flex-col"><span class="font-label-sm text-label-sm text-on-surface font-semibold">TA Bot v2.4</span><span class="font-label-sm text-label-sm text-secondary">Discord Operational</span></div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">verified</span></div></div></aside><div class="pl-[304px]"><header class="fixed top-0 left-[304px] right-0 h-16 bg-surface/80 backdrop-blur-xl z-30 flex items-center justify-between px-space-lg shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><img alt="Discord TA Assistant Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XAF-tzz6qnfifGEVyHUEOpVclOVcX3GjYfbDhg-pTjR9tKE6Y9VidUFdseBuTrQRFicVa2hFZ2mNujFZlo6gbYmLZhH3zhcYaegg2usXwVNUYw9HhKdryYlSeLciIVWlZvB1rtDqAqmb8QN7Qprub_bD-Iu8h2GtRB-ptpLeg85SbrmEd_bB0uckm3uXpg2T1xj2DSRqn4yyn5_Bv9XnxHg_oH6ovDa-5pHxn5945suMV6U-OWUEsDHQ"/><div class="flex flex-col"><div class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant"><span class="text-on-surface font-semibold">Discord Operations</span><span>/</span><span>Issue Command Center</span></div><span class="font-headline-sm text-headline-sm text-on-surface font-semibold">CS50 - Operations Server</span></div><div class="hidden xl:flex items-center gap-space-xs ml-space-md"><span class="inline-flex items-center px-space-sm py-space-xs rounded-full bg-primary-container text-on-primary-container font-label-sm text-label-sm">34 Active Issues</span><span class="inline-flex items-center px-space-sm py-space-xs rounded-full bg-surface-container-high text-secondary font-label-sm text-label-sm">98.5% Solved Rate</span></div></div><div class="flex items-center gap-space-md"><div class="relative flex items-center"><span class="material-symbols-outlined absolute left-space-sm text-on-surface-variant text-[18px]">search</span><input class="bg-surface-container-lowest text-on-surface font-body-md text-body-md pl-9 pr-8 py-space-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-primary placeholder-on-surface-variant w-64" placeholder="Search issues, students, logs..." type="text"/><span class="absolute right-2 px-1 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">/</span></div><button class="p-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors relative" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-error"></span></button><div class="flex items-center gap-space-xs pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden md:flex flex-col text-left"><span class="font-label-sm text-label-sm text-on-surface font-medium">Head TA Lead</span><span class="font-label-sm text-label-sm text-secondary">Online</span></div></div></div></header><main class="w-full pt-16 bg-background px-space-lg py-space-lg"><div class="flex flex-col w-full gap-space-lg">
+<!-- KPI Pulse Ribbon -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- KPI 1 -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container p-space-md shadow-md flex flex-col justify-between group hover:bg-surface-container-high transition-all duration-200">
+<div class="absolute -right-6 -bottom-6 w-24 h-24 bg-primary-container/10 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Tổng số Issues</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-1 animate-pulse"></span>Live
+        </span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-display text-display text-on-surface tracking-tight font-bold">48</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">active pool</span>
+</div>
+<div class="mt-3 flex items-center gap-2 pt-2 bg-surface-container-lowest/40 -mx-space-md -mb-space-md px-space-md py-2 rounded-b-xl">
+<span class="font-label-sm text-label-sm text-error flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>12 Cần xử lý
+        </span>
+<span class="text-outline-variant font-label-sm">•</span>
+<span class="font-label-sm text-label-sm text-tertiary flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>8 Đang bàn
+        </span>
+<span class="text-outline-variant font-label-sm">•</span>
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>28 Xong
+        </span>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container p-space-md shadow-md flex flex-col justify-between group hover:bg-surface-container-high transition-all duration-200">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Học viên tham gia</span>
+<span class="material-symbols-outlined text-primary-container text-[20px]">groups</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-display text-display text-on-surface tracking-tight font-bold">184</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium">↑ +14% hôm nay</span>
+</div>
+<div class="mt-3 flex items-center justify-between pt-2 bg-surface-container-lowest/40 -mx-space-md -mb-space-md px-space-md py-2 rounded-b-xl">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Độ gắn kết: 4.2 câu / bạn</span>
+<span class="font-label-sm text-label-sm text-primary">#bai-tap-tuan-4</span>
+</div>
+</div>
+<!-- KPI 3 -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container p-space-md shadow-md flex flex-col justify-between group hover:bg-surface-container-high transition-all duration-200">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">AI Confidence Score</span>
+<span class="material-symbols-outlined text-tertiary text-[20px]">auto_awesome</span>
+</div>
+<div class="mt-2 flex items-baseline gap-3">
+<span class="font-display text-display text-on-surface tracking-tight font-bold">94.2%</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container-highest text-secondary font-mono">HIGH CONF</span>
+</div>
+<!-- Progress Bar -->
+<div class="mt-3 pt-2 bg-surface-container-lowest/40 -mx-space-md -mb-space-md px-space-md py-2.5 rounded-b-xl flex flex-col gap-1">
+<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full transition-all duration-500" style="width: 94.2%;"></div>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Tự động nhóm 42/48 issues</span>
+<span class="text-on-surface font-semibold">94.2%</span>
+</div>
+</div>
+</div>
+<!-- KPI 4 -->
+<div class="relative overflow-hidden rounded-xl bg-surface-container p-space-md shadow-md flex flex-col justify-between group hover:bg-surface-container-high transition-all duration-200">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Thời gian phản hồi Discord</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">timer</span>
+</div>
+<div class="mt-2 flex items-baseline gap-2">
+<span class="font-display text-display text-on-surface tracking-tight font-bold">18</span>
+<span class="font-headline-sm text-headline-sm text-on-surface-variant">phút TB</span>
+</div>
+<div class="mt-3 flex items-center justify-between pt-2 bg-surface-container-lowest/40 -mx-space-md -mb-space-md px-space-md py-2 rounded-b-xl">
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-[14px]">trending_down</span> -6 phút vs tuần trước
+        </span>
+<span class="font-label-sm text-label-sm text-outline">SLA: &lt; 30m</span>
+</div>
+</div>
+</div>
+<!-- Operational Workspace: 3 Columns Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-md items-start">
+<!-- Column 1: Filters & Tactical Views (3 Cols) -->
+<div class="lg:col-span-3 flex flex-col gap-space-md">
+<!-- Filter Card -->
+<div class="bg-surface-container rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<!-- Live Dataset Tag -->
+<div class="flex items-center justify-between bg-surface-container-lowest px-space-sm py-1.5 rounded-lg">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Live Dataset</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Sync Realtime</span>
+</div>
+<!-- Search Input -->
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full bg-surface-container-lowest text-on-surface font-body-md text-body-md pl-9 pr-3 py-2 rounded-lg placeholder-outline-variant focus:outline-none focus:bg-surface-container-high transition-colors" placeholder="Tìm theo tiêu đề, tag, ID..." type="text"/>
+</div>
+<!-- Status Filter Tabs -->
+<div class="flex flex-col gap-1.5">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Lọc theo trạng thái</span>
+<button class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-highest text-on-surface font-body-sm text-body-sm font-semibold transition-all" type="button">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>Tất cả trạng thái
+            </span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant font-mono">48</span>
+</button>
+<button class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-lowest/50 hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-all" type="button">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span>OPEN
+            </span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container-highest text-error font-mono">14</span>
+</button>
+<button class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-lowest/50 hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-all" type="button">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>NEEDS_REVIEW
+            </span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container-highest text-tertiary font-mono">7</span>
+</button>
+<button class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-lowest/50 hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-all" type="button">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>DISCUSSING
+            </span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container-highest text-primary-fixed-dim font-mono">9</span>
+</button>
+<button class="flex items-center justify-between px-3 py-2 rounded-lg bg-surface-container-lowest/50 hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-all" type="button">
+<span class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline"></span>STUCK
+            </span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-mono">3</span>
+</button>
+</div>
+<!-- Topic Tags filter -->
+<div class="flex flex-col gap-2 pt-2">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Chủ đề phổ biến</span>
+<div class="flex flex-wrap gap-1.5">
+<button class="px-2 py-1 rounded-md bg-surface-container-lowest text-primary font-label-sm text-label-sm hover:bg-primary-container hover:text-on-primary transition-colors flex items-center gap-1" type="button">
+<span class="text-outline-variant">#</span>react-hook
+              <span class="ml-1 text-[10px] text-on-surface-variant bg-surface-container px-1 rounded">16</span>
+</button>
+<button class="px-2 py-1 rounded-md bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center gap-1" type="button">
+<span class="text-outline-variant">#</span>hydration-ssr
+              <span class="ml-1 text-[10px] text-outline bg-surface-container px-1 rounded">12</span>
+</button>
+<button class="px-2 py-1 rounded-md bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center gap-1" type="button">
+<span class="text-outline-variant">#</span>oauth-discord
+              <span class="ml-1 text-[10px] text-outline bg-surface-container px-1 rounded">8</span>
+</button>
+<button class="px-2 py-1 rounded-md bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center gap-1" type="button">
+<span class="text-outline-variant">#</span>cors-fastapi
+              <span class="ml-1 text-[10px] text-outline bg-surface-container px-1 rounded">5</span>
+</button>
+<button class="px-2 py-1 rounded-md bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center gap-1" type="button">
+<span class="text-outline-variant">#</span>jest-testing
+              <span class="ml-1 text-[10px] text-outline bg-surface-container px-1 rounded">3</span>
+</button>
+</div>
+</div>
+<!-- TA Shift status widget -->
+<div class="mt-2 p-space-sm rounded-xl bg-surface-container-lowest flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover" data-alt="Close up realistic portrait avatar of a cheerful female teaching assistant in modern computer science lab with soft blue lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtmOy9psd0EpGjtp3KL4YdLW2BSWCaHc03d9FdkkXmPueWN2BEAHqntWTr46XeFbt99YrvIY5hXS8zQr5c4bp2WawEEjtnAX-AMZomRYK6PzcxiA4L-00C5BD4A7BkeNOAfoc7-XOno253fN7RMtmURRsNfJZpaMtq0xv2AfYaCNex91M0gbwZmAv3oGqL30fRpT4_2mVsqBvygG8LxITEZgZu5bnevp4yjYpx7JKQryvl-NZJHEZQ"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface font-semibold truncate">TA Thảo Vy</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Ca trực: 14:00 - 18:00</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">radio_button_checked</span>
+</div>
+</div>
+</div>
+<!-- Column 2: Thread Queue List (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-sm">
+<div class="flex items-center justify-between px-1">
+<span class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+          Hàng đợi Issues
+          <span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-primary-container text-on-primary-container font-mono">5 Đang chọn</span>
+</span>
+<button class="text-on-surface-variant hover:text-on-surface text-label-sm font-label-sm flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[16px]">swap_vert</span>Mới nhất
+        </button>
+</div>
+<!-- Thread Cards Stack -->
+<div class="flex flex-col gap-space-sm max-h-[820px] overflow-y-auto pr-0.5">
+<!-- CARD 1: Active Selected Card -->
+<div class="relative p-space-md rounded-xl bg-surface-container-high shadow-lg transition-all cursor-pointer flex flex-col gap-2">
+<!-- Left accent indicator -->
+<div class="absolute left-0 top-3 bottom-3 w-1 bg-tertiary rounded-r-full"></div>
+<div class="flex items-center justify-between pl-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">#bai-tap-tuan-4 • 2m trước</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-lowest text-tertiary font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>NEEDS_REVIEW
+            </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface pl-2 font-semibold">
+            Issue #104: Lỗi hydration React 19 khi dùng SSR with Next.js App Router
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant pl-2 line-clamp-2">
+            Text content does not match server-rendered HTML khi render Date.now() hoặc đọc cookie client-side trong Server Component.
+          </p>
+<div class="flex items-center justify-between pt-2 pl-2 mt-1 bg-surface-container/60 -mx-space-md -mb-space-md px-space-md py-2 rounded-b-xl">
+<div class="flex items-center gap-3">
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">group</span> 7 Học viên
+              </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">forum</span> 12 câu hỏi
+              </span>
+</div>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-primary-container/20 text-primary font-mono font-medium">
+              AI 96%
+            </span>
+</div>
+</div>
+<!-- CARD 2 -->
+<div class="p-space-md rounded-xl bg-surface-container hover:bg-surface-container-high transition-all cursor-pointer flex flex-col gap-2 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">#auth-integration • 18m trước</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-lowest text-error font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-error"></span>OPEN
+            </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+            Issue #103: Không lấy được Bearer Token sau khi Login OAuth Discord
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+            Redirect URI trả về code hợp lệ nhưng endpoint exchange token trả về HTTP 401 Invalid Client Secret.
+          </p>
+<div class="flex items-center justify-between pt-1 font-label-sm text-label-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">group</span> 4 Học viên</span>
+<span>•</span>
+<span>6 câu</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-outline font-mono">AI 88%</span>
+</div>
+</div>
+<!-- CARD 3 -->
+<div class="p-space-md rounded-xl bg-surface-container hover:bg-surface-container-high transition-all cursor-pointer flex flex-col gap-2 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">#fullstack-lab • 45m trước</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>DISCUSSING
+            </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+            Issue #102: Lỗi CORS khi gọi backend FastAPI từ Vite dev server
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+            CORS header đã thêm allow_origins=['*'] nhưng khi gửi Authorization header trình duyệt vẫn chặn preflight request OPTIONS.
+          </p>
+<div class="flex items-center justify-between pt-1 font-label-sm text-label-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">group</span> 9 Học viên</span>
+<span>•</span>
+<span>15 câu</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-outline font-mono">AI 91%</span>
+</div>
+</div>
+<!-- CARD 4 -->
+<div class="p-space-md rounded-xl bg-surface-container hover:bg-surface-container-high transition-all cursor-pointer flex flex-col gap-2 opacity-80 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">#javascript-core • 2h trước</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-lowest text-secondary font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>RESOLVED
+            </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+            Issue #99: Giải thích closure trong useEffect event listener
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+            State count luôn nhận giá trị 0 ban đầu trong callback window.addEventListener click handler.
+          </p>
+<div class="flex items-center justify-between pt-1 font-label-sm text-label-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">group</span> 18 Học viên</span>
+<span>•</span>
+<span>22 câu</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-secondary font-mono">Đã đóng</span>
+</div>
+</div>
+<!-- CARD 5 -->
+<div class="p-space-md rounded-xl bg-surface-container hover:bg-surface-container-high transition-all cursor-pointer flex flex-col gap-2 shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">#unit-testing • 3h trước</span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>STUCK
+            </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+            Issue #95: SyntaxError: Unexpected token export trong Jest test suite
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+            Jest không parse được ES Module khi import thư viện axios hoặc nanoid không compile sang CJS.
+          </p>
+<div class="flex items-center justify-between pt-1 font-label-sm text-label-sm text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">group</span> 3 Học viên</span>
+<span>•</span>
+<span>5 câu</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest text-outline font-mono">Cần TA can thiệp</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Column 3: Rich Detail Workspace & Operation Hub (5 Cols) -->
+<div class="lg:col-span-5 flex flex-col gap-space-md">
+<!-- Main Detail Panel -->
+<div class="bg-surface-container rounded-xl p-space-lg shadow-xl flex flex-col gap-space-md">
+<!-- Header & Discord Deep Link -->
+<div class="flex flex-col gap-space-sm pb-space-sm bg-surface-container-lowest/30 -mx-space-lg -mt-space-lg p-space-lg rounded-t-xl">
+<div class="flex items-center justify-between flex-wrap gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-md text-label-md px-2 py-0.5 rounded bg-surface-container-highest text-tertiary font-bold">
+                ISSUE #104
+              </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Kênh: #bai-tap-tuan-4</span>
+</div>
+<a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-container text-on-primary font-body-sm text-body-sm font-semibold shadow hover:bg-opacity-90 transition-all" href="#">
+<span class="material-symbols-outlined text-[16px]">forum</span>
+              Mở trên Discord thread
+            </a>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface font-bold">
+            Lỗi hydration React 19 khi dùng SSR with Next.js App Router
+          </h2>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest text-on-surface-variant font-body-sm text-body-sm leading-relaxed">
+<strong class="text-on-surface">Cốt lõi vấn đề từ Discord:</strong> Nhiều bạn cùng gặp mismatch HTML khi chạy Server Component kèm theo client logic (như gọi `cookies()`, đọc `localStorage` tại render đầu tiên, hoặc format múi giờ `Intl.DateTimeFormat` không đồng bộ client/server).
+          </div>
+</div>
+<!-- Quick Action Controls Hub -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Thao tác nhanh cho TA</span>
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">bolt</span>Sẵn sàng phản hồi bulk
+            </span>
+</div>
+<!-- Highlight AI Action Button -->
+<button class="w-full relative overflow-hidden group p-3 rounded-xl bg-gradient-to-r from-primary-container via-inverse-primary to-primary-container text-on-primary flex items-center justify-center gap-2 font-headline-sm text-headline-sm font-bold shadow-lg hover:shadow-primary-container/30 transition-all duration-300" type="button">
+<div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<span class="material-symbols-outlined text-[20px] text-tertiary-fixed animate-spin" style="animation-duration: 8s;">auto_awesome</span>
+<span>Phân tích &amp; Tách bằng AI (AI Split Proposal)</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-black/30 text-on-primary">2 cụm mới</span>
+</button>
+<!-- Status Transition Buttons -->
+<div class="grid grid-cols-3 gap-2 mt-1">
+<button class="py-2 px-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-secondary font-body-sm text-body-sm flex items-center justify-center gap-1 font-medium transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>Resolve
+            </button>
+<button class="py-2 px-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm flex items-center justify-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">refresh</span>Reopen
+            </button>
+<button class="py-2 px-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm flex items-center justify-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px]">merge</span>Merge ID...
+            </button>
+</div>
+</div>
+<!-- Student Questions Contributions Section -->
+<div class="flex flex-col gap-space-sm pt-2">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-2">
+              Câu hỏi học viên
+              <span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-highest text-on-surface font-mono">12 đóng góp</span>
+</span>
+<!-- Batch Action Bar -->
+<div class="flex items-center gap-1.5 bg-surface-container-lowest px-2 py-1 rounded-lg">
+<span class="font-label-sm text-label-sm text-primary font-bold">2 đã chọn</span>
+<button class="px-2 py-1 rounded bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-sm text-label-sm transition-colors" type="button">
+                Chuyển câu
+              </button>
+<button class="px-2 py-1 rounded bg-primary-container text-on-primary font-label-sm text-label-sm transition-colors" type="button">
+                Tách issue
+              </button>
+</div>
+</div>
+<!-- Question Items List -->
+<div class="flex flex-col gap-2.5 max-h-[380px] overflow-y-auto pr-1">
+<!-- Question 1 (Selected) -->
+<div class="p-space-sm rounded-xl bg-surface-container-high transition-all flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<input checked="" class="w-4 h-4 rounded bg-surface-container-lowest text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Discord style clean minimalist cartoon avatar of a student with purple glasses and coder hoodie" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpQc0UKqb_JXQ8ygUqkODuvKCjBxNCjCTIo9I_PmN4oCgGi22Hf3Ydxfu6ipztsCtL3AFD9H3oZ-_Z3XlcMUAQ8HGFZDKl7ynj8Vws_Q6o5q99XMmGBNPnh5PImsqHnpHMHte4ni1oBvXUkN-PMS5Tllrm63nFUVMoiYDdNemmtAZYRKVJw998LBT8GBqDpXPJwDJc_w49D6mMcSzsmL8-o5BNL4hFhGNwWCHVq7q1bocw55go3B9u"/>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">@minhtri_dev</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">#Q-8891</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">5m trước</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug pl-6">
+                Em bị crash ngay khi bật App Router Next 15:
+              </p>
+<div class="ml-6 p-2 rounded bg-surface-container-lowest font-mono text-[11px] text-error overflow-x-auto">
+                Error: Hydration failed because the initial UI does not match what was rendered on the server.
+              </div>
+</div>
+<!-- Question 2 (Selected) -->
+<div class="p-space-sm rounded-xl bg-surface-container-high transition-all flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<input checked="" class="w-4 h-4 rounded bg-surface-container-lowest text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Discord style flat art avatar of an eager male tech enthusiast with headphones and neon accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-ZF3mHBFoWiVrbGDbLzWDUNKVpVbP61QpteWQqfKshDaLdtRcWG3ZHqamCKtr9z6Ea1MZ1JjlCehvlH9JipZ4S_H8FfBqwsR3Qb-fdg18VbP-tq-7KXnOGPLXp3iKXdzRjoVsalbHXlACn9QRX0T49NJBdQrZeVHhQvHO9FOg_56CSKAqWbQNQHaN0uC-T-FTGYCxoPZg5RK9m0nkGntIxdxSDetIhr5t3Aik7wIq5ZWEF2Y1BGgw"/>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">@anhkhoa99</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">#Q-8894</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">12m trước</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface leading-snug pl-6">
+                Khi em render phần time format ở Header thì F5 một cái là giao diện bị nhảy text từ UTC sang GMT+7.
+              </p>
+<div class="ml-6 p-2 rounded bg-surface-container-lowest font-mono text-[11px] text-primary-fixed-dim overflow-x-auto">
+                &lt;span&gt;{new Date().toLocaleTimeString()}&lt;/span&gt;
+              </div>
+</div>
+<!-- Question 3 (Unselected) -->
+<div class="p-space-sm rounded-xl bg-surface-container-lowest/60 hover:bg-surface-container-high transition-all flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<input class="w-4 h-4 rounded bg-surface-container-lowest text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Discord cute modern avatar of a female student with teal headphones smiling against dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXpnoyEovxymMZn9IWhXFlKVMnVdplch4KGFs3etTE2d07kAiSqnuIBTMVhwJsYDqVulqMcM56kAkRim1x4xOcCqDxudwC53EJ12MP7iGT3TZv6k9KIJpD77fdXaduhEdOm8fE13vtFIWtlVCYUU-5mHDC7z_qmlKkTTctLy4Vju2CoF9EH6MRhMM8Ft8RBKWfBvzNKjsXxwH3u4oMfxJJ0ejRFouqvaMXOxhDAv6jDp9JZ1Ch0qne"/>
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">@linhchi_it</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">#Q-8898</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">28m trước</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-snug pl-6">
+                Dùng `typeof window !== 'undefined'` ở client component nhưng vẫn bị warning Hydration mismatch trên terminal VS Code.
+              </p>
+</div>
+</div>
+</div>
+<!-- AI Proposal Drawer / Preview Card -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest flex flex-col gap-space-sm shadow-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">psychology</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Đề xuất phân tách cụm câu hỏi từ AI</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-surface-container-high text-secondary font-mono font-medium">Confidence 0.94</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            AI phát hiện trong 12 câu hỏi hiện tại có 2 nguyên nhân gốc độc lập:
+          </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+<!-- Cluster A -->
+<div class="p-space-sm rounded-lg bg-surface-container flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-primary font-bold">Cụm A: Next.js 15 Cookie Header</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">4 câu hỏi liên quan đến async cookies() mới</span>
+<span class="font-label-sm text-label-sm text-outline">Tạo: Issue #105</span>
+</div>
+<!-- Cluster B -->
+<div class="p-space-sm rounded-lg bg-surface-container flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-tertiary font-bold">Cụm B: Timezone / Date Hydration</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">8 câu hỏi về lệch múi giờ giữa Node server và browser</span>
+<span class="font-label-sm text-label-sm text-outline">Giữ lại: Issue #104</span>
+</div>
+</div>
+<div class="flex items-center justify-end gap-2 pt-1">
+<button class="px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm transition-colors" type="button">
+              Bỏ qua đề xuất
+            </button>
+<button class="px-3 py-1.5 rounded-lg bg-primary-container text-on-primary font-body-sm text-body-sm font-semibold shadow hover:opacity-95 transition-all" type="button">
+              Mở Split Review Modal
+            </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Floating Operational Toast Notification -->
+<div class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-surface-container-high text-on-surface shadow-2xl backdrop-blur-md">
+<div class="w-2.5 h-2.5 rounded-full bg-secondary"></div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface font-semibold">Đồng bộ Discord Realtime</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Vừa cập nhật 1 câu hỏi mới từ @hoangnam_cs</span>
+</div>
+<button class="ml-2 text-on-surface-variant hover:text-on-surface" onclick="this.parentElement.remove()" type="button">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div></main></div></body></html>

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-token" content="__CSRF_TOKEN__">
+  <title>TA Course Assistant</title>
+  <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+  <header class="app-header"><div><p class="eyebrow">TA Course Assistant</p><h1>Issue Operations</h1></div><nav><button data-dataset="live">Live</button><button data-dataset="demo">Demo</button></nav></header>
+  <main class="workspace">
+    <aside class="filters"><input id="search" type="search" placeholder="Tìm issue"><select id="status"><option value="">Mọi trạng thái</option><option>OPEN</option><option>STUCK</option><option>NEEDS_REVIEW</option><option>DISCUSSING</option></select></aside>
+    <section id="issue-list" aria-live="polite"></section>
+    <aside id="issue-detail" aria-live="polite"><p>Chọn một issue để xem chi tiết.</p></aside>
+  </main>
+  <dialog id="split-review"><form method="dialog"><header><h2>AI Split Proposal</h2><button value="cancel">Đóng</button></header><section id="proposal-groups"></section><button id="confirm-split" type="button">Xác nhận tách</button></form></dialog>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <script src="/dashboard.js" defer></script>
+</body>
+</html>

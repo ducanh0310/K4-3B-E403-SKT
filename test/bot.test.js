@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { acknowledgeSavedSource, autoReplyWithRag, backfillChannels, buildAskCommand, buildIssueCommand, buildJumpUrl, buildKnowledgeCommand, buildResolveComponents, isDigestAuthorized, normalizeDiscordMessage, pruneContextDatabases, vnDateHour } from '../src/bot.js';
+import { acknowledgeSavedSource, autoReplyWithRag, backfillChannels, buildAskCommand, buildIssueCommand, buildJumpUrl, buildKnowledgeCommand, buildResolveComponents, buildSplitProposalComponents, isDigestAuthorized, normalizeDiscordMessage, pruneContextDatabases, vnDateHour } from '../src/bot.js';
 
 test('builds Discord jump URLs and normalizes messages', () => {
   assert.equal(buildJumpUrl('G', 'C', 'M'), 'https://discord.com/channels/G/C/M');
@@ -23,10 +23,15 @@ test('authorizes digest for moderators or the configured guild', () => {
 test('builds TA issue controls', () => {
   const command = buildIssueCommand().toJSON();
   assert.equal(command.name, 'issue');
-  assert.deepEqual(command.options.map(option => option.name), ['resolve', 'reopen', 'merge']);
+  assert.deepEqual(command.options.map(option => option.name), ['resolve', 'reopen', 'merge', 'analyze', 'move']);
   const rows = buildResolveComponents([{ id: 'I1' }, { id: 'I2' }]);
   assert.equal(rows.length, 1);
   assert.deepEqual(rows[0].toJSON().components.map(button => button.custom_id), ['issue:resolve:I1', 'issue:resolve:I2']);
+});
+
+test('builds split proposal controls', () => {
+  const components = buildSplitProposalComponents('P1', 'https://dashboard.test/?proposal=P1')[0].toJSON().components;
+  assert.deepEqual(components.map(item => item.custom_id || item.url), ['issue:split-confirm:P1', 'issue:split-cancel:P1', 'https://dashboard.test/?proposal=P1']);
 });
 
 test('builds a public ask command with a required question', () => {

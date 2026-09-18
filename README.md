@@ -6,6 +6,7 @@ Repository này chứa **TA Course Assistant**: Discord bot tự động gom iss
 
 - Hướng dẫn sử dụng: [`docs/HUONG_DAN_SU_DUNG.md`](docs/HUONG_DAN_SU_DUNG.md)
 - Tài liệu kỹ thuật và triển khai: [`docs/BOT_TECHNICAL.md`](docs/BOT_TECHNICAL.md)
+- `/ask` live-model evaluation: [`eval/ask-results.md`](eval/ask-results.md) — 19/20 cases passed (95.0%)
 - Chạy kiểm thử: `npm ci && npm test`
 - Chạy bot: `node --env-file=.env src/bot.js`
 

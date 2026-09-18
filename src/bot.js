@@ -19,6 +19,7 @@ import { startDashboard } from './dashboard.js';
 import { buildDigest } from './digest.js';
 import { createLlmClient } from './llm.js';
 import { createPipeline } from './pipeline.js';
+import { createIssueManager } from './issue-manager.js';
 
 export function buildJumpUrl(guildId, channelId, messageId) {
   return `https://discord.com/channels/${guildId}/${channelId}/${messageId}`;
@@ -69,7 +70,11 @@ export function buildIssueCommand() {
     .addSubcommand(command => command.setName('reopen').setDescription('Mở lại issue').addStringOption(issueId))
     .addSubcommand(command => command.setName('merge').setDescription('Gom hai issue trùng nhau')
       .addStringOption(option => option.setName('source').setDescription('Issue cần nhập').setRequired(true))
-      .addStringOption(option => option.setName('target').setDescription('Issue giữ lại').setRequired(true)));
+      .addStringOption(option => option.setName('target').setDescription('Issue giữ lại').setRequired(true)))
+    .addSubcommand(command => command.setName('analyze').setDescription('Đề xuất tách issue bằng AI').addStringOption(issueId))
+    .addSubcommand(command => command.setName('move').setDescription('Chuyển một câu hỏi sang issue khác')
+      .addStringOption(option => option.setName('question').setDescription('Question ID').setRequired(true))
+      .addStringOption(option => option.setName('target').setDescription('Issue đích').setRequired(true)));
 }
 
 export function buildAskCommand() {
@@ -95,6 +100,15 @@ export function buildResolveComponents(actionItems) {
     .setLabel(`✓ #${index + 1}`)
     .setStyle(ButtonStyle.Success));
   return buttons.length ? [new ActionRowBuilder().addComponents(buttons)] : [];
+}
+
+export function buildSplitProposalComponents(proposalId, dashboardUrl = '') {
+  const buttons = [
+    new ButtonBuilder().setCustomId(`issue:split-confirm:${proposalId}`).setLabel('Confirm All').setStyle(ButtonStyle.Success),
+    new ButtonBuilder().setCustomId(`issue:split-cancel:${proposalId}`).setLabel('Cancel').setStyle(ButtonStyle.Secondary),
+  ];
+  if (dashboardUrl) buttons.push(new ButtonBuilder().setLabel('Open Dashboard Review').setStyle(ButtonStyle.Link).setURL(dashboardUrl));
+  return [new ActionRowBuilder().addComponents(buttons)];
 }
 
 export async function backfillChannels({ client, pipeline, channelIds, limit, logger = console }) {
@@ -171,6 +185,7 @@ export async function startBot(env = process.env) {
   const llm = createLlmClient({ baseUrl: config.llmBaseUrl, model: config.llmModel, cache: db });
   const answerer = createAnswerer({ db, referenceDb: demoDb, llm });
   const pipeline = createPipeline({ db, llm, officialChannelIds: config.officialChannelIds });
+  const issueManager = createIssueManager({ db, llm });
   const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
   let lastDigestDate = '';
   let lastPruneDate = vnDateHour(new Date()).date;
@@ -184,6 +199,8 @@ export async function startBot(env = process.env) {
     stuckAfterHours: config.stuckAfterHours,
     username: config.dashboardUser,
     password: config.dashboardPassword,
+    publicOrigin: config.dashboardPublicUrl,
+    issueManager,
   }) : null;
 
   client.on('messageCreate', async message => {
@@ -200,7 +217,7 @@ export async function startBot(env = process.env) {
 
   client.on('interactionCreate', async interaction => {
     try {
-      const isIssueButton = interaction.isButton() && interaction.customId.startsWith('issue:resolve:');
+      const isIssueButton = interaction.isButton() && interaction.customId.startsWith('issue:');
       const isIssueCommand = interaction.isChatInputCommand() && interaction.commandName === 'issue';
       const isDigestCommand = interaction.isChatInputCommand() && interaction.commandName === 'digest';
       const isAskCommand = interaction.isChatInputCommand() && interaction.commandName === 'ask';
@@ -234,6 +251,18 @@ export async function startBot(env = process.env) {
       }
 
       if (isIssueButton) {
+        if (interaction.customId.startsWith('issue:split-confirm:')) {
+          const proposalId = interaction.customId.slice('issue:split-confirm:'.length);
+          const issues = issueManager.applyProposal(proposalId);
+          await interaction.reply({ content: `Đã tách thành ${issues.length} issue.`, ephemeral: true });
+          return;
+        }
+        if (interaction.customId.startsWith('issue:split-cancel:')) {
+          const proposalId = interaction.customId.slice('issue:split-cancel:'.length);
+          issueManager.cancelProposal(proposalId);
+          await interaction.reply({ content: 'Đã hủy đề xuất tách.', ephemeral: true });
+          return;
+        }
         const id = interaction.customId.slice('issue:resolve:'.length);
         db.updateIssueStatus(id, 'RESOLVED');
         await interaction.reply({ content: `Đã đánh dấu ${id} là RESOLVED.`, ephemeral: true });
@@ -241,6 +270,22 @@ export async function startBot(env = process.env) {
       }
 
       const action = interaction.options.getSubcommand();
+      if (action === 'analyze') {
+        await interaction.deferReply({ ephemeral: true });
+        const id = interaction.options.getString('id', true);
+        const proposal = await issueManager.analyze(id);
+        const lines = proposal.groups.map((group, index) => `${index + 1}. **${group.title}** — ${group.questionIds.length} câu · ${Math.round(group.confidence * 100)}%`);
+        const reviewUrl = config.dashboardPublicUrl ? `${config.dashboardPublicUrl}/?proposal=${encodeURIComponent(proposal.id)}` : '';
+        await interaction.editReply({ content: `Đề xuất tách **${id}**:\n${lines.join('\n')}\n\n${proposal.unassignedQuestionIds.length} câu giữ lại để review.`, components: buildSplitProposalComponents(proposal.id, reviewUrl), allowedMentions: { parse: [] } });
+        return;
+      }
+      if (action === 'move') {
+        const questionId = interaction.options.getString('question', true);
+        const targetId = interaction.options.getString('target', true);
+        issueManager.moveQuestions({ questionIds: [questionId], targetId });
+        await interaction.reply({ content: `Đã chuyển ${questionId} vào ${targetId}.`, ephemeral: true });
+        return;
+      }
       if (action === 'merge') {
         const source = interaction.options.getString('source', true);
         const target = interaction.options.getString('target', true);

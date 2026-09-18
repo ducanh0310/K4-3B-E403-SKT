@@ -4,12 +4,25 @@ import test from 'node:test';
 import { createAnswerer, formatAnswer } from '../src/answer.js';
 import { openDatabase } from '../src/database.js';
 
-test('returns needs_ta without calling the LLM when retrieval is empty', async () => {
+test('answers general knowledge when retrieval is empty', async () => {
   const db = openDatabase(':memory:');
-  const answerer = createAnswerer({ db, llm: { completeJson: async () => assert.fail('LLM should not be called') } });
-  const result = await answerer.answer('CVAT sửa thế nào?');
+  const answerer = createAnswerer({ db, llm: { completeJson: async request => {
+    assert.deepEqual(request.input.sources, []);
+    return { answer: 'List comprehension là cú pháp tạo list ngắn gọn trong Python.', confidence: 0.95, source_ids: [], needs_ta: false, basis: 'general' };
+  } } });
+  const result = await answerer.answer('List comprehension trong Python là gì?');
+  assert.equal(result.kind, 'general');
+  assert.match(formatAnswer(result), /kiến thức chung/i);
+  db.close();
+});
+
+test('routes unsupported course-specific questions to TA without mentioning a 30-day limit', async () => {
+  const db = openDatabase(':memory:');
+  const answerer = createAnswerer({ db, llm: { completeJson: async () => ({ answer: '', confidence: 0, source_ids: [], needs_ta: true, basis: 'general' }) } });
+  const result = await answerer.answer('Deadline Lab 3 là khi nào?');
   assert.equal(result.kind, 'needs_ta');
   assert.match(formatAnswer(result), /TA\/MOD/);
+  assert.doesNotMatch(formatAnswer(result), /30 ngày/);
   db.close();
 });
 
@@ -17,7 +30,10 @@ test('shows related issues from the existing dataset without treating them as ev
   const db = openDatabase(':memory:');
   const referenceDb = openDatabase(':memory:');
   referenceDb.createIssue({ id: 'REF1', title: 'Lab 2 deadline', summary: 'Nhiều học viên hỏi hạn Lab 2', topics: ['assignment', 'deadline'], status: 'OPEN', confidence: 0.9, firstSeen: '2026-09-13T08:00:00+07:00', lastSeen: '2026-09-13T09:00:00+07:00' });
-  const answerer = createAnswerer({ db, referenceDb, llm: { completeJson: async () => assert.fail('Reference issues are not trusted evidence') } });
+  const answerer = createAnswerer({ db, referenceDb, llm: { completeJson: async request => {
+    assert.deepEqual(request.input.sources, []);
+    return { answer: '', confidence: 0, source_ids: [], needs_ta: true, basis: 'general' };
+  } } });
   const result = await answerer.answer('Lab 2 deadline là khi nào?');
   assert.equal(result.kind, 'needs_ta');
   assert.deepEqual(result.relatedIssues.map(issue => issue.id), ['REF1']);

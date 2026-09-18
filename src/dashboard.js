@@ -1,5 +1,7 @@
-import { timingSafeEqual } from 'node:crypto';
+import { randomBytes, timingSafeEqual } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { createServer } from 'node:http';
+import path from 'node:path';
 
 import { deriveStatus } from './digest.js';
 
@@ -106,8 +108,29 @@ export function renderDashboard(issues, {
   </style></head><body><main><header><div><p>${escapeHtml(eyebrow)}</p><h1>${escapeHtml(title)}</h1><p>Cập nhật ${escapeHtml(updated)} · tự làm mới sau 30 giây</p><nav aria-label="Chọn dữ liệu"><a href="/">Live</a><a href="/demo">K4 Dataset</a></nav></div></header><section class="metrics" aria-label="Tổng quan"><div class="metric"><b>${topicCount}</b><span>nhóm chủ đề</span></div><div class="metric"><b>${active.length}</b><span>issue đang mở</span></div><div class="metric"><b>${stuck}</b><span>issue bị kẹt</span></div><div class="metric"><b>${questions}</b><span>câu hỏi đang theo dõi</span></div></section>${content}${lowPrioritySection && sections ? lowPrioritySection : ''}</main></body></html>`;
 }
 
-export function startDashboard({ db, demoDb = null, host = '127.0.0.1', port = 8787, stuckAfterHours = 4, username = '', password = '', logger = console }) {
-  const server = createServer((request, response) => {
+function sendJson(response, status, body) {
+  response.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+  response.end(JSON.stringify(body));
+}
+
+async function readJson(request) {
+  let body = '';
+  for await (const chunk of request) {
+    body += chunk;
+    if (body.length > 1_000_000) throw new Error('Request body too large');
+  }
+  return body ? JSON.parse(body) : {};
+}
+
+export function startDashboard({ db, demoDb = null, issueManager = null, host = '127.0.0.1', port = 8787, stuckAfterHours = 4, username = '', password = '', publicOrigin = '', logger = console }) {
+  const publicDir = path.resolve('public');
+  const template = readFileSync(path.join(publicDir, 'dashboard.html'), 'utf8');
+  const assets = new Map([
+    ['/dashboard.css', ['text/css; charset=utf-8', readFileSync(path.join(publicDir, 'dashboard.css'))]],
+    ['/dashboard.js', ['text/javascript; charset=utf-8', readFileSync(path.join(publicDir, 'dashboard.js'))]],
+  ]);
+  const csrfToken = randomBytes(32).toString('base64url');
+  const server = createServer(async (request, response) => {
     if (!authorized(request, username, password)) {
       response.writeHead(401, {
         'content-type': 'text/plain; charset=utf-8',
@@ -117,12 +140,65 @@ export function startDashboard({ db, demoDb = null, host = '127.0.0.1', port = 8
       response.end('authentication required');
       return;
     }
-    if (request.url === '/healthz') {
+    const url = new URL(request.url, 'http://localhost');
+    const pathname = url.pathname;
+    if (pathname === '/healthz') {
       response.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' });
       response.end('ok');
       return;
     }
-    const pathname = new URL(request.url, 'http://localhost').pathname;
+    if (assets.has(pathname)) {
+      const [contentType, content] = assets.get(pathname);
+      response.writeHead(200, { 'content-type': contentType, 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
+      response.end(content);
+      return;
+    }
+    const isDemo = url.searchParams.get('dataset') === 'demo' || pathname === '/demo';
+    const selectedDb = isDemo ? demoDb : db;
+    if (pathname.startsWith('/api/')) {
+      if (!selectedDb) return sendJson(response, 404, { error: 'DATASET_NOT_FOUND', message: 'Dataset không tồn tại.' });
+      try {
+        if (request.method === 'GET' && pathname === '/api/issues') {
+          const now = new Date();
+          const issues = selectedDb.listIssueStats().map(issue => {
+            const derivedStatus = deriveStatus(issue, now, stuckAfterHours);
+            return { ...issue, status: derivedStatus, derivedStatus };
+          });
+          return sendJson(response, 200, { issues, readOnly: isDemo });
+        }
+        const issueMatch = pathname.match(/^\/api\/issues\/([^/]+)$/);
+        if (request.method === 'GET' && issueMatch) {
+          const issue = selectedDb.getIssueBundle(decodeURIComponent(issueMatch[1]));
+          return issue
+            ? sendJson(response, 200, { issue: { ...issue, status: deriveStatus(issue, new Date(), stuckAfterHours), derivedStatus: deriveStatus(issue, new Date(), stuckAfterHours) }, readOnly: isDemo })
+            : sendJson(response, 404, { error: 'ISSUE_NOT_FOUND', message: 'Không tìm thấy issue.' });
+        }
+        const proposalMatch = pathname.match(/^\/api\/split-proposals\/([^/]+)$/);
+        if (request.method === 'GET' && proposalMatch) {
+          const proposal = issueManager?.getProposal(decodeURIComponent(proposalMatch[1]));
+          return proposal ? sendJson(response, 200, { proposal }) : sendJson(response, 404, { error: 'PROPOSAL_NOT_FOUND', message: 'Không tìm thấy proposal.' });
+        }
+        if (request.method !== 'POST') return sendJson(response, 404, { error: 'NOT_FOUND', message: 'Không tìm thấy API.' });
+        if (isDemo) return sendJson(response, 405, { error: 'DEMO_READ_ONLY', message: 'Dataset demo chỉ được xem.' });
+        const allowedOrigins = new Set([`http://${request.headers.host}`, `https://${request.headers.host}`, publicOrigin].filter(Boolean));
+        if (request.headers['x-csrf-token'] !== csrfToken || !allowedOrigins.has(request.headers.origin) || !request.headers['content-type']?.startsWith('application/json')) {
+          return sendJson(response, 403, { error: 'INVALID_CSRF', message: 'Yêu cầu không hợp lệ.' });
+        }
+        const body = await readJson(request);
+        const analyzeMatch = pathname.match(/^\/api\/issues\/([^/]+)\/analyze$/);
+        if (analyzeMatch) return sendJson(response, 200, { proposal: await issueManager.analyze(decodeURIComponent(analyzeMatch[1])) });
+        const splitMatch = pathname.match(/^\/api\/issues\/([^/]+)\/split$/);
+        if (splitMatch) return sendJson(response, 200, { issues: issueManager.applyProposal(body.proposalId, body) });
+        const statusMatch = pathname.match(/^\/api\/issues\/([^/]+)\/(resolve|reopen)$/);
+        if (statusMatch) return sendJson(response, 200, { issue: db.updateIssueStatus(decodeURIComponent(statusMatch[1]), statusMatch[2] === 'resolve' ? 'RESOLVED' : 'OPEN') });
+        if (pathname === '/api/questions/move') return sendJson(response, 200, { issue: issueManager.moveQuestions(body) });
+        if (pathname === '/api/issues/merge') return sendJson(response, 200, { issue: db.mergeIssues(body.sourceId, body.targetId) });
+        return sendJson(response, 404, { error: 'NOT_FOUND', message: 'Không tìm thấy API.' });
+      } catch (error) {
+        logger.error('dashboard request failed', error);
+        return sendJson(response, 400, { error: 'INVALID_REQUEST', message: error.message });
+      }
+    }
     if (pathname !== '/' && (pathname !== '/demo' || !demoDb)) {
       response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
       response.end('not found');
@@ -131,15 +207,10 @@ export function startDashboard({ db, demoDb = null, host = '127.0.0.1', port = 8
     response.writeHead(200, {
       'content-type': 'text/html; charset=utf-8',
       'cache-control': 'no-store',
-      'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; frame-ancestors 'none'",
+      'content-security-policy': "default-src 'none'; style-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'",
       'x-content-type-options': 'nosniff',
     });
-    const isDemo = pathname === '/demo';
-    response.end(renderDashboard((isDemo ? demoDb : db).listIssueStats(), {
-      stuckAfterHours,
-      title: isDemo ? 'K4 Dataset Demo' : 'TA Course Assistant',
-      eyebrow: isDemo ? '1.092 tin đã ẩn danh · 12–14/09/2026' : 'Discord-native · Read-only',
-    }));
+    response.end(template.replace('__CSRF_TOKEN__', csrfToken));
   });
   server.on('error', error => logger.error('dashboard failed', error));
   server.listen(port, host, () => logger.log(`TA dashboard listening on http://${host}:${port}`));

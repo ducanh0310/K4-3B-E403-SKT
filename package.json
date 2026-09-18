@@ -6,6 +6,7 @@
   "engines": { "node": ">=22.13" },
   "scripts": {
     "test": "node --test",
+    "eval:ask": "node --env-file=.env eval/run-ask-eval.js --output eval/ask-results.md",
     "merge-demo": "node src/merge-demo.js",
     "rebuild": "node --env-file=.env src/rebuild.js",
     "replay": "node src/replay.js",
