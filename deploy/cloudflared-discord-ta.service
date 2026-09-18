@@ -3,9 +3,11 @@ Description=Cloudflare Quick Tunnel for Discord TA dashboard
 After=network-online.target
 
 [Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/apps/discord-ta-bot
 ExecStart=/home/ubuntu/apps/discord-ta-bot/deploy/cloudflared-dashboard.sh
 Restart=always
 RestartSec=5
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
