@@ -24,6 +24,30 @@ test('splits one message into multiple issues', async () => {
   db.close();
 });
 
+test('rejects non-support content and normalizes topics', async () => {
+  const db = openDatabase(':memory:');
+  const pipeline = createPipeline({ db, llm: fakeLlm([
+    { support_relevant: false, questions: [] },
+    { support_relevant: true, questions: [{
+      text: 'Lab 2 nộp ở đâu?',
+      title: 'Lab 2 submission',
+      summary: 'Nơi nộp Lab 2',
+      topics: ['submission', 'UNKNOWN', 'submission', 'other'],
+      confidence: 0.95,
+      urgency: 'normal',
+      requires_official_source: true,
+    }] },
+  ]) });
+
+  const announcement = await pipeline.processMessage(message({ id: 'ANN', content: 'Thông báo workshop tối nay' }));
+  assert.equal(announcement.kind, 'ignored');
+  assert.equal(announcement.reason, 'not_support_request');
+
+  const result = await pipeline.processMessage(message({ id: 'Q', content: 'Lab 2 nộp ở đâu?' }));
+  assert.deepEqual(result.issues[0].topics, ['submission']);
+  db.close();
+});
+
 test('merges high confidence and routes medium confidence to review', async () => {
   const db = openDatabase(':memory:');
   db.createIssue({ id: 'cvat-opa', title: 'CVAT OPA error', summary: 'Policy bundle lỗi', topics: ['technical'], status: 'OPEN', confidence: 0.9, firstSeen: '2026-09-17T08:00:00+07:00', lastSeen: '2026-09-17T08:00:00+07:00' });
