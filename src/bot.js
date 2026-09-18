@@ -124,6 +124,17 @@ export async function acknowledgeSavedSource(message, result) {
   if (result.kind === 'official_source_saved') await message.react('✅');
 }
 
+export async function autoReplyWithRag({ message, result, answerer, channelIds }) {
+  if (!channelIds.has(message.channelId) || result.kind !== 'processed' || !result.issues?.length) return false;
+  const answer = await answerer.answer(message.content);
+  if (answer.kind !== 'answered') return false;
+  await message.reply({
+    content: formatAnswer(answer),
+    allowedMentions: { parse: [], repliedUser: false },
+  });
+  return true;
+}
+
 function buildDigestPayload(db, config, now = new Date()) {
   const digest = buildDigest(db.listIssueStats(), { now, stuckAfterHours: config.stuckAfterHours });
   return { content: digest.text.slice(0, 1_990), components: buildResolveComponents(digest.actionItems) };
@@ -182,6 +193,7 @@ export async function startBot(env = process.env) {
     try {
       const result = await pipeline.processMessage(normalizeDiscordMessage(message));
       await acknowledgeSavedSource(message, result);
+      await autoReplyWithRag({ message, result, answerer, channelIds: config.autoReplyChannelIds });
     }
     catch (error) { console.error('message processing failed', message.id, error); }
   });

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { acknowledgeSavedSource, backfillChannels, buildAskCommand, buildIssueCommand, buildJumpUrl, buildKnowledgeCommand, buildResolveComponents, isDigestAuthorized, normalizeDiscordMessage, pruneContextDatabases, vnDateHour } from '../src/bot.js';
+import { acknowledgeSavedSource, autoReplyWithRag, backfillChannels, buildAskCommand, buildIssueCommand, buildJumpUrl, buildKnowledgeCommand, buildResolveComponents, isDigestAuthorized, normalizeDiscordMessage, pruneContextDatabases, vnDateHour } from '../src/bot.js';
 
 test('builds Discord jump URLs and normalizes messages', () => {
   assert.equal(buildJumpUrl('G', 'C', 'M'), 'https://discord.com/channels/G/C/M');
@@ -79,4 +79,28 @@ test('acknowledges a saved official source', async () => {
   await acknowledgeSavedSource({ react: async emoji => reactions.push(emoji) }, { kind: 'official_source_saved' });
   await acknowledgeSavedSource({ react: async emoji => reactions.push(emoji) }, { kind: 'processed' });
   assert.deepEqual(reactions, ['✅']);
+});
+
+test('auto replies only to processed questions in enabled channels with grounded answers', async () => {
+  const replies = [];
+  const message = { channelId: 'AUTO', content: 'Demo Lab Alpha hạn lúc nào?', reply: async payload => replies.push(payload) };
+  const answerer = { answer: async () => ({ kind: 'answered', answer: '23:59 ngày 25/09/2026.', sources: [{ title: 'Demo Lab Alpha' }] }) };
+  const replied = await autoReplyWithRag({
+    message,
+    result: { kind: 'processed', issues: [{ id: 'I1' }] },
+    answerer,
+    channelIds: new Set(['AUTO']),
+  });
+  assert.equal(replied, true);
+  assert.equal(replies.length, 1);
+  assert.deepEqual(replies[0].allowedMentions, { parse: [], repliedUser: false });
+});
+
+test('does not auto reply without evidence or outside enabled channels', async () => {
+  let calls = 0;
+  const answerer = { answer: async () => { calls += 1; return { kind: 'needs_ta', sources: [] }; } };
+  const message = { channelId: 'AUTO', content: 'Unknown', reply: async () => assert.fail('must not reply') };
+  assert.equal(await autoReplyWithRag({ message, result: { kind: 'processed', issues: [{}] }, answerer, channelIds: new Set(['AUTO']) }), false);
+  assert.equal(await autoReplyWithRag({ message: { ...message, channelId: 'OTHER' }, result: { kind: 'processed', issues: [{}] }, answerer, channelIds: new Set(['AUTO']) }), false);
+  assert.equal(calls, 1);
 });

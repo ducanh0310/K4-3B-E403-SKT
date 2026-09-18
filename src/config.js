@@ -27,6 +27,7 @@ export function loadConfig(env = process.env, { replay = false } = {}) {
     digestChannelId: env.DISCORD_DIGEST_CHANNEL_ID || '',
     monitoredChannelIds: new Set((env.DISCORD_MONITORED_CHANNEL_IDS || '').split(',').map(v => v.trim()).filter(Boolean)),
     officialChannelIds: new Set((env.DISCORD_OFFICIAL_CHANNEL_IDS || '').split(',').map(v => v.trim()).filter(Boolean)),
+    autoReplyChannelIds: new Set((env.DISCORD_AUTO_REPLY_CHANNEL_IDS || '').split(',').map(v => v.trim()).filter(Boolean)),
     llmBaseUrl: (env.LLM_BASE_URL || 'http://127.0.0.1:20128/v1').replace(/\/$/, ''),
     llmModel: env.LLM_MODEL || 'ag/gemini-3.8-flash-low',
     databasePath: path.resolve(env.DATABASE_PATH || './data/bot.db'),

@@ -52,6 +52,8 @@ Ví dụ:
 
 Câu trả lời `/ask` là **ephemeral**, chỉ người gửi lệnh nhìn thấy.
 
+Trong kênh `#data_chatbot`, học viên có thể gửi câu hỏi như message bình thường. Bot tự trả lời công khai khi tìm được nguồn RAG đủ tin cậy. Nếu không đủ nguồn, bot không đoán và vẫn lưu câu hỏi vào luồng theo dõi cho TA.
+
 ### Hai loại kết quả
 
 **Có đủ nguồn tin cậy:** bot trả lời và hiển thị mục **Nguồn**. Nguồn hợp lệ gồm thông báo chính thức hoặc câu trả lời TA đã giải quyết issue.

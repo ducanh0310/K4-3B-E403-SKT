@@ -14,6 +14,7 @@ test('replay mode uses safe defaults without Discord credentials', () => {
   assert.equal(config.stuckAfterHours, 4);
   assert.equal(config.contextRetentionDays, 30);
   assert.equal(config.officialChannelIds.size, 0);
+  assert.equal(config.autoReplyChannelIds.size, 0);
   assert.equal(config.backfillLimit, 100);
   assert.equal(config.dashboardHost, '127.0.0.1');
   assert.equal(config.dashboardPort, 8787);
@@ -23,8 +24,9 @@ test('replay mode uses safe defaults without Discord credentials', () => {
 });
 
 test('parses official channels and retention days', () => {
-  const config = loadConfig({ DISCORD_OFFICIAL_CHANNEL_IDS: 'A, B', CONTEXT_RETENTION_DAYS: '14', DISCORD_BACKFILL_LIMIT: '25' }, { replay: true });
+  const config = loadConfig({ DISCORD_OFFICIAL_CHANNEL_IDS: 'A, B', DISCORD_AUTO_REPLY_CHANNEL_IDS: 'C, D', CONTEXT_RETENTION_DAYS: '14', DISCORD_BACKFILL_LIMIT: '25' }, { replay: true });
   assert.deepEqual([...config.officialChannelIds], ['A', 'B']);
+  assert.deepEqual([...config.autoReplyChannelIds], ['C', 'D']);
   assert.equal(config.contextRetentionDays, 14);
   assert.equal(config.backfillLimit, 25);
 });
