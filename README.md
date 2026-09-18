@@ -1,5 +1,14 @@
 # Mini Hackathon AI — Batch 04 · Lớp 3B
 
+## Prototype của nhóm
+
+Repository này chứa **TA Course Assistant**: Discord bot tự động gom issue, tạo TA digest, trả lời bằng RAG có citation và cung cấp dashboard read-only.
+
+- Hướng dẫn sử dụng: [`docs/HUONG_DAN_SU_DUNG.md`](docs/HUONG_DAN_SU_DUNG.md)
+- Tài liệu kỹ thuật và triển khai: [`docs/BOT_TECHNICAL.md`](docs/BOT_TECHNICAL.md)
+- Chạy kiểm thử: `npm ci && npm test`
+- Chạy bot: `node --env-file=.env src/bot.js`
+
 **SPEC → Prototype → Demo.** Đây không phải cuộc thi code — đây là cuộc thi **tư duy sản phẩm AI**.
 
 ## 👥 Thành viên nhóm & Phân công vai trò
