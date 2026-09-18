@@ -21,17 +21,17 @@ function rebuildLlm(calls) {
         return { issues: input.issues.map(issue => ({
           id: issue.id,
           support_relevant: issue.id !== 'I3',
-          canonical_title: 'CVAT OPA error',
+          canonical_title: `CVAT OPA error ${issue.id}`,
           canonical_summary: 'CVAT không tải policy bundle',
           topics: ['technical'],
         })) };
       }
       if (purpose === 'cluster_issue_batch') {
-        return { issues: input.issues.map(issue => ({
-          id: issue.id,
+        return { groups: [{
           group_key: 'technical:cvat-opa-error',
           group_title: 'CVAT OPA error',
-        })) };
+          issue_ids: input.issues.map(issue => issue.id),
+        }] };
       }
       throw new Error(`Unexpected rebuild purpose: ${purpose}`);
     },
