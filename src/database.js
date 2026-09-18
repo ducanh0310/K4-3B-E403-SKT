@@ -34,6 +34,22 @@ function parseSource(row) {
   } : null;
 }
 
+function parseMessage(row) {
+  return row ? {
+    id: row.id,
+    guildId: row.guild_id,
+    channelId: row.channel_id,
+    threadId: row.thread_id,
+    authorId: row.author_id,
+    authorRoles: JSON.parse(row.author_roles || '[]'),
+    isBot: Boolean(row.is_bot),
+    content: row.content,
+    replyTo: row.reply_to,
+    jumpUrl: row.jump_url,
+    createdAt: row.created_at,
+  } : null;
+}
+
 function ftsQuery(query) {
   const terms = query.toLowerCase().match(/[\p{L}\p{N}_-]+/gu) || [];
   return terms.map(term => `"${term.replaceAll('"', '""')}"`).join(' OR ');
@@ -119,6 +135,12 @@ export function openDatabase(filePath) {
         message.authorId, json(message.authorRoles), message.isBot ? 1 : 0, message.content,
         message.replyTo || null, message.jumpUrl || null, message.createdAt,
       ).changes === 1;
+    },
+    listMessages() {
+      return sqlite.prepare('SELECT * FROM messages ORDER BY created_at, id').all().map(parseMessage);
+    },
+    countMessages() {
+      return sqlite.prepare('SELECT COUNT(*) AS count FROM messages').get().count;
     },
     insertQuestion(question) {
       insertQuestionStatement.run(
@@ -226,6 +248,9 @@ export function openDatabase(filePath) {
         .run(source.id, source.title, source.content);
       return parseSource(sqlite.prepare('SELECT * FROM official_sources WHERE id = ?').get(source.id));
     },
+    listOfficialSources() {
+      return sqlite.prepare('SELECT * FROM official_sources ORDER BY created_at, id').all().map(parseSource);
+    },
     searchOfficialSources(query, limit = 5) {
       const match = ftsQuery(query);
       if (!match) return [];
@@ -247,6 +272,25 @@ export function openDatabase(filePath) {
       sqlite.prepare('INSERT INTO issue_answer_search (answer_id, title, content) VALUES (?, ?, ?)')
         .run(answer.id, answer.title, answer.content);
       return answer;
+    },
+    listResolvedAnswerBundles() {
+      return sqlite.prepare(`
+        SELECT a.id AS answer_id, a.title AS answer_title, a.content AS answer_content,
+          a.source_url AS answer_source_url, a.created_at AS answer_created_at, i.*
+        FROM issue_answers a JOIN issues i ON i.id = a.issue_id
+        WHERE i.status = 'RESOLVED'
+        ORDER BY a.created_at, a.id
+      `).all().map(row => ({
+        issue: parseIssue(row),
+        answer: {
+          id: row.answer_id,
+          issueId: row.id,
+          title: row.answer_title,
+          content: row.answer_content,
+          sourceUrl: row.answer_source_url,
+          createdAt: row.answer_created_at,
+        },
+      }));
     },
     searchKnowledge(query, limit = 6) {
       const match = ftsQuery(query);

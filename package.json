@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node --test",
     "merge-demo": "node src/merge-demo.js",
+    "rebuild": "node --env-file=.env src/rebuild.js",
     "replay": "node src/replay.js",
     "start": "node src/bot.js"
   },
