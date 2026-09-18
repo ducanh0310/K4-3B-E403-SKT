@@ -112,7 +112,7 @@ Rebuild always writes a separate SQLite file and refuses to overwrite the source
 npm run rebuild -- data/bot.db data/bot-rebuilt.db
 ```
 
-The command replays retained raw messages through the current classifier, then restores official sources and resolved TA answers. Stop the bot and create an external backup before atomically replacing the production database.
+The command preserves retained raw messages, classifies existing issue/question bundles in bounded AI batches, performs one compact global clustering pass, then restores official sources and resolved TA answers. Malformed large JSON batches are split automatically. Stop the bot and create an external backup before atomically replacing the production database.
 
 ## EC2 deployment
 

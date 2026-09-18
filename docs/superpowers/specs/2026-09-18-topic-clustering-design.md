@@ -82,3 +82,7 @@ Unknown labels are normalized to `other`. `other` is only valid when no specific
 - Keep SQLite FTS5; add no vector database at the current corpus size.
 - Do not create Discord threads automatically.
 - Do not fine-tune the model; corrections continue through canonical issue merges and trusted knowledge.
+
+## Implementation Note
+
+Production rebuild classifies existing issue/question bundles instead of extracting all 1,300+ raw messages again. Classification runs in bounded batches with automatic split-on-malformed-JSON, followed by a compact global grouping response. Raw messages remain preserved for retention and future processing.

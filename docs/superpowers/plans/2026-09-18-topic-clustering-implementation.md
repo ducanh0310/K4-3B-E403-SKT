@@ -185,6 +185,8 @@ git commit -m "feat: group dashboard issues by topic"
 
 ### Task 4: Safe Database Rebuild Command
 
+**Production adjustment:** Runtime measurements showed that serial raw-message replay would take roughly two hours. The implemented rebuild preserves all raw messages, batch-classifies existing issue/question bundles, and performs a compact global clustering pass. This keeps the same acceptance criteria while reducing LLM calls from hundreds to a small bounded set.
+
 **Files:**
 - Modify: `src/database.js`
 - Create: `src/rebuild.js`
