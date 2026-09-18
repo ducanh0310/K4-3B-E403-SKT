@@ -22,6 +22,29 @@ test('finds issue candidates with SQLite FTS', () => {
   db.close();
 });
 
+test('finds candidates by controlled topic when wording differs', () => {
+  const db = openDatabase(':memory:');
+  db.createIssue({
+    id: 'cvat',
+    title: 'CVAT OPA error',
+    summary: 'OPA không tải policy bundle',
+    topics: ['technical'],
+    status: 'OPEN',
+    confidence: 0.9,
+    firstSeen: '2026-09-18T08:00:00+07:00',
+    lastSeen: '2026-09-18T08:00:00+07:00',
+  });
+
+  const candidates = db.findIssueCandidates({
+    title: 'Policy service failure',
+    text: 'Dịch vụ xác thực không đồng bộ cấu hình',
+    topics: ['technical'],
+  }, 12);
+
+  assert.deepEqual(candidates.map(item => item.id), ['cvat']);
+  db.close();
+});
+
 test('updates, merges, and reopens issues', () => {
   const db = openDatabase(':memory:');
   const createdAt = '2026-09-18T08:00:00+07:00';

@@ -124,13 +124,13 @@ export function createPipeline({
       for (const [index, question] of questions.entries()) {
         const questionId = `${message.id}:${index + 1}`;
         db.insertQuestion({ ...question, id: questionId, messageId: message.id, authorId: message.authorId, createdAt: message.createdAt });
-        const candidates = db.searchIssues(`${question.title} ${question.text} ${question.topics.join(' ')}`, 8);
+        const candidates = db.findIssueCandidates(question, 12);
         let match = null;
         if (candidates.length) {
           match = await llm.completeJson({
             purpose: 'match_issue',
             input: { question, candidates: candidates.map(({ id, title, summary, topics, status }) => ({ id, title, summary, topics, status })) },
-            system: 'Decide whether the question has the same underlying issue as one candidate. Return JSON {"same_issue":true,"issue_id":"","confidence":0}. Do not merge merely because topics overlap.',
+            system: 'Decide whether the question has the same underlying issue as one candidate. Compare user intent, affected object, requested action, and exact error identity. Return JSON {"same_issue":true,"issue_id":"","confidence":0}. Do not merge merely because topics overlap.',
           });
         }
 

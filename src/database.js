@@ -152,6 +152,21 @@ export function openDatabase(filePath) {
         WHERE issue_search MATCH ? ORDER BY bm25(issue_search) LIMIT ?
       `).all(match, limit).map(parseIssue);
     },
+    findIssueCandidates(question, limit = 12) {
+      const query = `${question.title || ''} ${question.text || ''} ${(question.topics || []).join(' ')}`;
+      const candidates = this.searchIssues(query, limit * 2).filter(issue => issue.status !== 'RESOLVED');
+      const topics = [...new Set(question.topics || [])];
+      if (topics.length) {
+        const placeholders = topics.map(() => '?').join(', ');
+        candidates.push(...sqlite.prepare(`
+          SELECT DISTINCT issues.* FROM issues
+          JOIN json_each(issues.topics) AS topic
+          WHERE issues.status != 'RESOLVED' AND topic.value IN (${placeholders})
+          ORDER BY issues.last_seen DESC LIMIT ?
+        `).all(...topics, limit).map(parseIssue));
+      }
+      return [...new Map(candidates.map(issue => [issue.id, issue])).values()].slice(0, limit);
+    },
     linkQuestion(issueId, questionId) {
       sqlite.prepare('INSERT OR IGNORE INTO issue_questions (issue_id, question_id) VALUES (?, ?)').run(issueId, questionId);
     },
