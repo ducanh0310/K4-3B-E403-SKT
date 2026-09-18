@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { backfillChannels, buildAskCommand, buildIssueCommand, buildJumpUrl, buildKnowledgeCommand, buildResolveComponents, isDigestAuthorized, normalizeDiscordMessage, pruneContextDatabases, vnDateHour } from '../src/bot.js';
+import { acknowledgeSavedSource, backfillChannels, buildAskCommand, buildIssueCommand, buildJumpUrl, buildKnowledgeCommand, buildResolveComponents, isDigestAuthorized, normalizeDiscordMessage, pruneContextDatabases, vnDateHour } from '../src/bot.js';
 
 test('builds Discord jump URLs and normalizes messages', () => {
   assert.equal(buildJumpUrl('G', 'C', 'M'), 'https://discord.com/channels/G/C/M');
@@ -72,4 +72,11 @@ test('backfills channel messages oldest first and deduplicates channel ids', asy
   const result = await backfillChannels({ client, pipeline: { processMessage: async value => seen.push(value.id) }, channelIds: ['C', 'C'], limit: 25, logger: { error() {} } });
   assert.deepEqual(seen, ['M1', 'M2']);
   assert.deepEqual(result, { channels: 1, messages: 2, errors: 0 });
+});
+
+test('acknowledges a saved official source', async () => {
+  const reactions = [];
+  await acknowledgeSavedSource({ react: async emoji => reactions.push(emoji) }, { kind: 'official_source_saved' });
+  await acknowledgeSavedSource({ react: async emoji => reactions.push(emoji) }, { kind: 'processed' });
+  assert.deepEqual(reactions, ['✅']);
 });

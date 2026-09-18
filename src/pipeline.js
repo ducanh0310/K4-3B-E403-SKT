@@ -76,6 +76,9 @@ export function createPipeline({
       if (!inserted) return { kind: 'duplicate', issues: [] };
       const classification = classifyMessage(message);
       if (classification.kind === 'ignore') return { kind: 'ignored', reason: classification.reason, issues: [] };
+      if (officialChannelIds.has(message.channelId) && classification.kind !== 'official_source_candidate') {
+        return { kind: 'ignored', reason: 'official_channel_non_staff', issues: [] };
+      }
       const resolutionIssues = await updateFromReply(message);
       if (classification.kind === 'official_source_candidate') {
         if (!officialChannelIds.has(message.channelId)) return { kind: 'staff_message', issues: [], resolutionIssues };

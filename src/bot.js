@@ -120,6 +120,10 @@ export async function backfillChannels({ client, pipeline, channelIds, limit, lo
   return { channels, messages, errors };
 }
 
+export async function acknowledgeSavedSource(message, result) {
+  if (result.kind === 'official_source_saved') await message.react('✅');
+}
+
 function buildDigestPayload(db, config, now = new Date()) {
   const digest = buildDigest(db.listIssueStats(), { now, stuckAfterHours: config.stuckAfterHours });
   return { content: digest.text.slice(0, 1_990), components: buildResolveComponents(digest.actionItems) };
@@ -175,7 +179,10 @@ export async function startBot(env = process.env) {
     if (config.monitoredChannelIds.size
       && !config.monitoredChannelIds.has(message.channelId)
       && !config.officialChannelIds.has(message.channelId)) return;
-    try { await pipeline.processMessage(normalizeDiscordMessage(message)); }
+    try {
+      const result = await pipeline.processMessage(normalizeDiscordMessage(message));
+      await acknowledgeSavedSource(message, result);
+    }
     catch (error) { console.error('message processing failed', message.id, error); }
   });
 

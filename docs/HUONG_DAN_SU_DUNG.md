@@ -15,7 +15,7 @@ Vào server Discord đã cài bot **TA Course Assistant**, sau đó gõ `/` đ�
 
 ### Dashboard read-only
 
-- Dashboard live: mở URL được lưu trong `outputs/discord-ta-dashboard-access.txt` trên máy triển khai.
+- Dashboard live: mở URL được lưu trong `C:\Users\ADMIN\Documents\Codex\2026-09-17\h\outputs\discord-ta-dashboard-access.txt`.
 - Dataset demo: thêm `/demo` vào cuối URL dashboard.
 - Username dashboard: `ta`.
 - Password dashboard: xem trong file access phía trên; không gửi password qua Discord.
@@ -70,6 +70,17 @@ Câu trả lời `/ask` là **ephemeral**, chỉ người gửi lệnh nhìn th�
 Các lệnh quản trị yêu cầu quyền Discord `Manage Messages` hoặc `Administrator`.
 
 ### Thêm nguồn RAG đã xác minh
+
+TA có thể đăng trực tiếp vào kênh `#rag-knowledge`. Dòng đầu tiên của message được dùng làm tiêu đề, toàn bộ message là nội dung nguồn. Bot thả `✅` khi đã index thành công.
+
+Ví dụ message trong `#rag-knowledge`:
+
+```text
+Lab 2 deadline
+Lab 2 phải nộp trên LMS trước 23:59 ngày 25/09/2026. Không nhận bài qua email.
+```
+
+Ngoài ra có thể dùng slash command:
 
 ```text
 /knowledge add title:<tiêu đề> content:<nội dung> url:<link HTTPS>

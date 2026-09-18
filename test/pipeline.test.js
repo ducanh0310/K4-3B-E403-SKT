@@ -46,6 +46,19 @@ test('ignores bot messages', async () => {
   db.close();
 });
 
+test('ignores non-moderator messages in official knowledge channels', async () => {
+  const db = openDatabase(':memory:');
+  const pipeline = createPipeline({
+    db,
+    llm: { completeJson: async () => assert.fail('LLM should not process student content in a knowledge channel') },
+    officialChannelIds: new Set(['KNOWLEDGE']),
+  });
+  const result = await pipeline.processMessage(message({ channelId: 'KNOWLEDGE', content: 'Deadline là ngày em đoán' }));
+  assert.equal(result.kind, 'ignored');
+  assert.equal(result.reason, 'official_channel_non_staff');
+  db.close();
+});
+
 test('marks an issue resolved when a confident reply answers it', async () => {
   const db = openDatabase(':memory:');
   db.insertMessage(message({ id: 'QUESTION', content: 'CVAT lỗi' }));
