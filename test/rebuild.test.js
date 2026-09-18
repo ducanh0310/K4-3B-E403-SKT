@@ -58,6 +58,15 @@ test('rebuilds clustered issues while preserving trusted knowledge', async t => 
   source.linkQuestion('I1', 'Q1');
   source.linkQuestion('I2', 'Q2');
   source.linkQuestion('I3', 'Q3');
+  for (let index = 4; index <= 27; index += 1) {
+    const messageId = `M${index}`;
+    const questionId = `Q${index}`;
+    const issueId = `I${index}`;
+    source.insertMessage(message(messageId, `CVAT policy lỗi ${index}`, `2026-09-18T08:${String(index).padStart(2, '0')}:00+07:00`));
+    source.insertQuestion({ id: questionId, messageId, authorId: messageId, text: `CVAT policy lỗi ${index}`, topics: ['technical'], confidence: 0.8, createdAt: NOW });
+    source.createIssue({ id: issueId, title: `CVAT policy lỗi ${index}`, summary: `Policy lỗi ${index}`, topics: ['technical'], status: 'OPEN', confidence: 0.8, firstSeen: NOW, lastSeen: NOW });
+    source.linkQuestion(issueId, questionId);
+  }
   source.addOfficialSource({ id: 'SRC', title: 'Lab deadline', content: 'Deadline là 23:59', createdAt: NOW });
   source.createIssue({ id: 'OLD', title: 'Docker startup', summary: 'Docker chưa chạy', topics: ['technical'], status: 'RESOLVED', confidence: 0.95, firstSeen: NOW, lastSeen: NOW });
   source.addIssueAnswer({ id: 'ANSWER:OLD', issueId: 'OLD', title: 'Docker startup', content: 'Hãy restart Docker', createdAt: NOW });
@@ -72,11 +81,11 @@ test('rebuilds clustered issues while preserving trusted knowledge', async t => 
   });
 
   const rebuilt = openDatabase(targetPath);
-  assert.equal(result.messages, 3);
-  assert.equal(rebuilt.countMessages(), 3);
+  assert.equal(result.messages, 27);
+  assert.equal(rebuilt.countMessages(), 27);
   assert.deepEqual(rebuilt.searchOfficialSources('deadline', 5).map(item => item.id), ['SRC']);
   assert.deepEqual(rebuilt.searchKnowledge('restart Docker', 5).map(item => item.id), ['ANSWER:OLD']);
   assert.equal(rebuilt.listIssueStats().filter(issue => issue.status !== 'RESOLVED').length, 1);
-  assert.deepEqual(calls, ['classify_issue_batch', 'cluster_issue_batch']);
+  assert.deepEqual(calls, ['classify_issue_batch', 'classify_issue_batch', 'cluster_issue_batch']);
   rebuilt.close();
 });
